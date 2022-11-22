@@ -1,5 +1,5 @@
 /* 
-Raspberry Pi / BCM2835 Software-based UART Linux device driver
+Raspberry Pi / BCM2711 Software-based UART Linux device driver
 Copyright (C) 2014 Leonardo Ciocari
 
 This program is free software; you can redistribute it and/or modify
@@ -35,19 +35,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Leonardo Ciocari");
-MODULE_DESCRIPTION("Raspberry Pi / BCM2835 Soft-UART Driver");
+MODULE_DESCRIPTION("Raspberry Pi / BCM2711 Soft-UART Driver");
 
-static int BAUDRATE = 4800;
+static int BAUDRATE = 9600;
 module_param(BAUDRATE, int, 0);
-MODULE_PARM_DESC(BAUDRATE, " Baudrate value [default = 4800] (min=1200, max=19200)");
+MODULE_PARM_DESC(BAUDRATE, " Baudrate value [default = 9600] (min=1200, max=19200)");
 
 static int GPIO_TX = 4;
 module_param(GPIO_TX, int, 0);
 MODULE_PARM_DESC(GPIO_TX, " GPIO TX pin [default = 4]");
 
-static int GPIO_RX = 2;
+static int GPIO_RX = 5;
 module_param(GPIO_RX, int, 0);
-MODULE_PARM_DESC(GPIO_RX, " GPIO RX pin [default = 2]");
+MODULE_PARM_DESC(GPIO_RX, " GPIO RX pin [default = 5]");
 
 #define TX_BUFFER_SIZE	256
 #define RX_BUFFER_SIZE	256

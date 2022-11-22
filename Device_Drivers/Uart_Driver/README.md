@@ -44,7 +44,7 @@ Driver parameters:
 ```
 root@raspberrypi:/home/pi# modinfo softuart.ko 
 ...
-parm:           BAUDRATE: Baudrate value [default = 4800] (min=1200, max=19200) (int)
+parm:           BAUDRATE: Baudrate value [default = 9600] (min=1200, max=19200) (int)
 parm:           GPIO_TX: GPIO TX pin [default = 4] (int)
 parm:           GPIO_RX: GPIO RX pin [default = 2] (int)
 ```
@@ -54,9 +54,9 @@ insmod softuart.ko
 ```
 Loading module specifying all possible parameters:
 ```
-insmod softuart.ko GPIO_TX=4 GPIO_RX=2 BAUDRATE=4800
+insmod softuart.ko GPIO_TX=4 GPIO_RX=2 BAUDRATE=9600
 ```
-
+To indicate which GPIO to use check pinout, for example GPIO 4 is a TX port for UART3.
 ### Examples
 Minicom:
 ```
@@ -100,3 +100,6 @@ Tag 1.0 released and a pull request was accept on the Master branch, seems to be
 
 ## Updated (july 2017)
 Accepted pull request that adds support for the rpi version 2 and 3, however, I can't test any pull requests because I haven't the rpi hardware anymore, so if you are having problems with the master branch version (which contains all the pull requests), try the tag 1.0 that was fully developed and tested by me, using the rpi model B. A BIG thanks for all the contributors that keep updating the driver with the newer rpi models =]
+
+##Updated (November 2022)
+Changed to support Raspberry pi 4 64-bit
