@@ -349,6 +349,8 @@ static void __exit ModuleExit(void)
 	device_remove_file(pDEVICE, &dev_attr_baudrate);
 	device_destroy(pDEVICE_CLASS, 0);
 	
+	iounmap(pGpioRegisters);
+	
 	class_unregister(pDEVICE_CLASS);
 	class_destroy(pDEVICE_CLASS);	
 } 
