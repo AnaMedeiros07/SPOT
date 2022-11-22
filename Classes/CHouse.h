@@ -1,28 +1,26 @@
 #ifndef __CHOUSE_H_
 #define __CHOUSE_H_
 
-#include <string.h>
-
-class CHouse{
-    
+class CHouse
+{
     private:
 
-    char* name;
-    char* password;
+        char* name;
+        char* password;
 
     public:
 
-    CHouse(void);
+        CHouse(void);
 
-    ~CHouse(void);
+        ~CHouse(void);
 
-    int Check_Login(char*, char*);
+        int Check_Login(char*, char*);
 
-    int Sensor_Status(char*, char*);
+        int Sensor_Status(char*, char*);
 
-    int Motion_Status(void);
+        int Motion_Status(void);
 
-    int Check_Limits(void);
+        int Check_Limits(void);
 
 };
 
