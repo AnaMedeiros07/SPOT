@@ -1,12 +1,18 @@
 #ifndef __CHOUSE_H_
 #define __CHOUSE_H_
 
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
+
+using std::string;
+
 class CHouse
 {
     private:
 
-        char* name;
-        char* password;
+        string name;
+        string password;
 
     public:
 
@@ -14,9 +20,9 @@ class CHouse
 
         ~CHouse(void);
 
-        int Check_Login(char*, char*);
+        int Check_Login(string, string);
 
-        int Sensor_Status(char*, char*);
+        int Sensor_Status(void);
 
         int Motion_Status(void);
 
