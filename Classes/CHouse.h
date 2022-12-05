@@ -2,7 +2,6 @@
 #define __CHOUSE_H_
 
 #include <string.h>
-#include <stdio.h>
 #include <iostream>
 
 using std::string;
