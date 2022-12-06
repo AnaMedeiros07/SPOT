@@ -1,11 +1,12 @@
 #ifndef __CHOUSE_H_
 #define __CHOUSE_H_
+#include "CSensor.h"
+#include<iostream>
+#include<vector>
+#include<string>
 
-#include <string.h>
-#include <iostream>
 
-using std::string;
-
+using namespace std; 
 class CHouse
 {
     private:
@@ -15,17 +16,17 @@ class CHouse
 
     public:
 
-        CHouse(void);
+        CHouse(string,string);
 
         ~CHouse(void);
 
-        int Check_Login(string, string);
+        bool Check_Login(string, string);
 
-        int Sensor_Status(void);
+        double Sensor_Status(CSensor);
 
         int Motion_Status(void);
 
-        int Check_Limits(void);
+        std::vector<double> Check_Limits(CSensor,CSensor,CSensor);
 
 };
 

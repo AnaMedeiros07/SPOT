@@ -12,13 +12,13 @@ class CSensor
         
     public:
         
-        CSensor(double, double, int);
+        CSensor(double, double, double);
 
         ~CSensor();
 
         void Set_Value(double);
 
-        int Change_Limits(double);
+        void Change_Limits(double,double);
 
         double Check_Sensor(void);
 
