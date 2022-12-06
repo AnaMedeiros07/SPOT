@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <UCMD.h>
 
 using std::string;
 
