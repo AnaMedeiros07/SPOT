@@ -3,7 +3,7 @@
 #include <UCMD.h>
 #include <stdio.h>
 
-extern Command my_cmd_list;
+//extern Command my_cmd_list;
 
 //stores last used command and arguments
 

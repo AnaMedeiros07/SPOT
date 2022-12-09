@@ -69,4 +69,35 @@ int ucmd_parse(Command [], const char*, const char* in);
 
 void ucmd_error_handler(int);
 
+//---------------------------------------------------------//
+
+Command my_cmd_list[] = {
+    {
+        "led",
+        "LED || on\r",
+        (Command_cb) led_on_cb,
+    },
+		//Extra Commands
+		{
+        "$",
+        "$ || no arguments\r",
+        (Command_cb) last_cmd_cb,
+    },
+		{
+        "?",
+        "? || no arguments\r",
+        (Command_cb) help_cb,
+    },
+		{
+        "VER",
+        "VER || no arguments\r",
+        (Command_cb) version_cb,
+    },		
+    {
+        "",
+        "null list terminator",
+        NULL,
+    },
+};
+
 #endif
