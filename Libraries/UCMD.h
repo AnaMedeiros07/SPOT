@@ -1,37 +1,58 @@
 #ifndef __UCMD_H_
 #define __UCMD_H_
 
-//--------------------------------------//
-// UCMD module for STM32F767						//
-// Use in conjuction with UART3 module	//
-//--------------------------------------//
+//-------------------//
+//    UCMD module	 //
+//-------------------//
+
+
+/*
+
+//----------------------------- How to use -----------------------------//
+
+In cmd_list.cpp add custom commands with the structure
+{
+    "command"
+    "command help tooltip"
+    (Command_cb) 'function callback'
+}
+custom commands should always be declared before the null
+command terminator
+
+-----------------------------------------------------------------------------
+
+To process commands put UcmdParse() where it is necessary
+
+UcmdParse(Command_cb &my_cmd_list, char delimiter, string input)
+
+my_cmd_list is defined in cmd_list.cpp
+
+delimiter is declared to seperate the words in input string, by default
+it is ""
+
+input is a string with the command and arguments, this string should not
+contain special caracters in the end
+
+-----------------------------------------------------------------------------
+
+To define errors add it below and add the corresponding action to take in the
+UcmdErrorHandler function
+
+*/
+
 
 #include "limits.h"
 #include "stdint.h"
+#include <iostream>
+#include <string.h>
+
+using std::string;
 
 ////////////////////////
 // Define UCMD errors //
 ////////////////////////
 
-#define UCMD_CMD_NOT_FOUND 				INT_MIN			
-	
-#define UCMD_NOT_ENOUGH_PARAMETERS 		INT_MIN+1
-
-#define UCMD_CMD_LIST_NOT_FOUND 		INT_MIN+2
-
-#define UCMD_MEM_NOT_VALID				INT_MIN+3
-
-#define UCMD_PORT_NOT_VALID				INT_MIN+4
-
-#define UCMD_ADC_CHANNEL_NOT_VALID 		INT_MIN+5
-
-#define UCMD_CMD_LAST_CMD_LOOP			INT_MIN+6
-
-#define UCMD_CMD_LAST_CMD_NOT_VALID 	INT_MIN+7
-
-#define UCMD_COUNTER_VALUE_NOT_VALID	INT_MIN+8
-
-#define UCMD_PARAMETERS_NOT_VALID		INT_MIN+9
+#define UCMD_CMD_NOT_FOUND 				INT_MIN		
 
 //---------------------------------------------------------//
 
@@ -51,53 +72,27 @@ typedef struct Command {
 
 //Test Command
 
-int led_on_cb (int, char* []);
+int LedOnCb (int, char* []);
 
  
 //Extra Commands
 
-int last_cmd_cb (int, char* []);
+int LastCmdCb (int, char* []);
 
-int help_cb (int, char* []);
+int HelpCb (int, char* []);
 
-int version_cb (int, char* []);
+int VersionCb (int, char* []);
 
 //---------------------------------------------------------//
 
 //Parsing functions
-int ucmd_parse(Command [], const char*, const char* in);
 
-void ucmd_error_handler(int);
+int UcmdParse(Command [], const char*, const string in);
+
+void UcmdErrorHandler(int);
+
+string SanitizeString(string);
 
 //---------------------------------------------------------//
-
-Command my_cmd_list[] = {
-    {
-        "led",
-        "LED || on\r",
-        (Command_cb) led_on_cb,
-    },
-		//Extra Commands
-		{
-        "$",
-        "$ || no arguments\r",
-        (Command_cb) last_cmd_cb,
-    },
-		{
-        "?",
-        "? || no arguments\r",
-        (Command_cb) help_cb,
-    },
-		{
-        "VER",
-        "VER || no arguments\r",
-        (Command_cb) version_cb,
-    },		
-    {
-        "",
-        "null list terminator",
-        NULL,
-    },
-};
 
 #endif
