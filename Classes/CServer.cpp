@@ -12,8 +12,8 @@ bool Updatelocalhouse(double, double, double, double){
 
 }
 
-bool ProcessRequest(string){
-
+bool ProcessRequest(string str){
+    UcmdParse(&my_cmd_list,"",str);
 }
 
 bool SendValuesOutOfRange(void){

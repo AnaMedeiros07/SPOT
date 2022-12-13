@@ -7,6 +7,7 @@
 
 using std::string;
 
+extern Command my_cmd_list;
 
 class CServer
 {
