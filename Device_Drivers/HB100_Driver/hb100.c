@@ -47,7 +47,8 @@ unsigned int GPIO_irqNumber;
 static irqreturn_t gpio_irq_handler(int irq,void *dev_id) 
 {
   static unsigned long flags = 0;
-  
+  struct kernel_siginfo info;
+
 #ifdef EN_DEBOUNCE
    unsigned long diff = jiffies - old_jiffie;
    if (diff < 20)
@@ -59,6 +60,19 @@ static irqreturn_t gpio_irq_handler(int irq,void *dev_id)
 #endif  
   local_irq_save(flags);
   pr_info("Interrupt Occurred");
+  
+  memset(&info, 0, sizeof(struct kernel_siginfo));
+  info.si_signo = SIGETX;
+  info.si_code = SI_QUEUE;
+  info.si_int = 1;
+
+  if (task != NULL) {
+        printk(KERN_INFO "Sending signal to app\n");
+          if(send_sig_info(SIGETX, &info, task) < 0) {
+              printk(KERN_INFO "Unable to send signal\n");
+          }	
+    }
+
   local_irq_restore(flags);
   return IRQ_HANDLED;
 }

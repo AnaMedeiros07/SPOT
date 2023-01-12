@@ -43,8 +43,10 @@ __used __section("__versions") = {
 	{ 0x417ad940, "cdev_add" },
 	{ 0x628ec589, "cdev_init" },
 	{ 0xe3ec2f2b, "alloc_chrdev_region" },
+	{ 0x9f49dcc4, "__stack_chk_fail" },
 	{ 0x4b0a3f52, "gic_nonsecure_priorities" },
 	{ 0xd697e69a, "trace_hardirqs_on" },
+	{ 0xaa9405fc, "send_sig_info" },
 	{ 0xec3d2e1b, "trace_hardirqs_off" },
 	{ 0xc5850110, "printk" },
 };
@@ -52,4 +54,4 @@ __used __section("__versions") = {
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "58FE3BB87AAE3F820CEF47A");
+MODULE_INFO(srcversion, "C59DE06D99209F110802B3E");
