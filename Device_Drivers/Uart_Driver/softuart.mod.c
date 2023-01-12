@@ -29,6 +29,7 @@ __used __section("__versions") = {
 	{ 0x404c211a, "param_ops_int" },
 	{ 0xbc6cff2b, "class_destroy" },
 	{ 0x6e65558a, "class_unregister" },
+	{ 0xedc03953, "iounmap" },
 	{ 0x87447f11, "device_destroy" },
 	{ 0xa28ed92a, "device_remove_file" },
 	{ 0x46a4b118, "hrtimer_cancel" },
@@ -38,6 +39,8 @@ __used __section("__versions") = {
 	{ 0xebe637dc, "__class_create" },
 	{ 0x6b4b2933, "__ioremap" },
 	{ 0xaf56600a, "arm64_use_ng_mappings" },
+	{ 0x1e6d26a8, "strstr" },
+	{ 0xc5850110, "printk" },
 	{ 0x828e22f4, "hrtimer_forward" },
 	{ 0x3c5d543a, "hrtimer_start_range_ns" },
 	{ 0x98cf60b3, "strlen" },
@@ -51,4 +54,4 @@ __used __section("__versions") = {
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "1B4F2E7E3A82268718DBB30");
+MODULE_INFO(srcversion, "73F98295DB3818F323C9245");

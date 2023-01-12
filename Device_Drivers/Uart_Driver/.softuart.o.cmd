@@ -907,6 +907,25 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/Uart_Driver/softua
   include/linux/device/driver.h \
   arch/arm64/include/asm/device.h \
   include/linux/pm_wakeup.h \
+  include/linux/interrupt.h \
+    $(wildcard include/config/irq/forced/threading.h) \
+    $(wildcard include/config/generic/irq/probe.h) \
+    $(wildcard include/config/irq/timings.h) \
+  include/linux/irqreturn.h \
+  include/linux/hardirq.h \
+  include/linux/context_tracking_state.h \
+    $(wildcard include/config/context/tracking.h) \
+  include/linux/ftrace_irq.h \
+    $(wildcard include/config/hwlat/tracer.h) \
+  include/linux/vtime.h \
+    $(wildcard include/config/virt/cpu/accounting.h) \
+    $(wildcard include/config/irq/time/accounting.h) \
+  arch/arm64/include/asm/hardirq.h \
+  arch/arm64/include/asm/irq.h \
+  include/asm-generic/irq.h \
+  arch/arm64/include/asm/kvm_arm.h \
+  arch/arm64/include/asm/esr.h \
+  include/linux/irq_cpustat.h \
 
 /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/Uart_Driver/softuart.o: $(deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/Uart_Driver/softuart.o)
 

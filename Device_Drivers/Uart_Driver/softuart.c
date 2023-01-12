@@ -26,7 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <linux/hrtimer.h>
 #include <linux/sched.h>
 #include <linux/string.h>
+#include <linux/interrupt.h>
 
+#define SIGETX 44
 
 #define IO_ADDRESS(x)		(((x) & 0x00ffffff) + (((x) >> 4) & 0x0f000000) + 0xf0000000)
 #define __io_address(n)		IOMEM(IO_ADDRESS(n))
@@ -127,6 +129,8 @@ static enum hrtimer_restart FunctionTimerRX(struct hrtimer * unused)
 {
 	static int bit=-1;
 	
+	//struct kernel_siginfo info;
+
 	if(GPIOInputValueGet(GPIO_RX)==0 && bit==-1)	//Start bit received
 		bit++;
 	else	if(bit>=0 && bit<8)	//Data bits
@@ -149,7 +153,26 @@ static enum hrtimer_restart FunctionTimerRX(struct hrtimer * unused)
 		
 		if(strlen(RX_BUFFER)==RX_BUFFER_SIZE+1)
 			memset(RX_BUFFER,'\0',RX_BUFFER_SIZE+1);
+
+
+		printk("Content: %s", RX_BUFFER);
+
+		if(strstr(RX_BUFFER,"<0>")!=0){
+			printk("Triggered");
+			memset(RX_BUFFER,'\0',RX_BUFFER_SIZE+1);
+			
+			/*memset(&info, 0, sizeof(struct siginfo));
+			info.si_signo = SIGETX;
+			info.si_code = SI_QUEUE;
+			info.si_int = 1;*/
+
+			/*if(send_sig_info(SIGETX, &info, task) < 0) {
+            	printk(KERN_INFO "Unable to send signal\n");
+			}*/
+		}
 	}
+	
+
 	
 	hrtimer_forward_now(&hrtimer_rx, ktime_set(0, (1000000/BAUDRATE)*1000 ));
 	
@@ -349,7 +372,7 @@ static void __exit ModuleExit(void)
 	device_remove_file(pDEVICE, &dev_attr_baudrate);
 	device_destroy(pDEVICE_CLASS, 0);
 	
-	iounmap(pGpioRegisters);
+	iounmap(pGPIO_REGISTER);
 	
 	class_unregister(pDEVICE_CLASS);
 	class_destroy(pDEVICE_CLASS);	
