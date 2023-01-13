@@ -75,12 +75,11 @@ static struct cdev hb100_cdev;
 int hb100_open(struct inode *, struct file *);
 int hb100_release(struct inode *, struct file *);
 long hb100_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
-static ssize_t hb100_read(struct file *filp, char __user *buf, size_t len, loff_t * off);
+
 struct file_operations hb100_fops = {
 	.open = hb100_open,
 	.release = hb100_release,
 	.unlocked_ioctl = hb100_ioctl,
-	.read = hb100_read, 
 };
 
 MODULE_LICENSE("GPL v2");
@@ -114,12 +113,6 @@ long hb100_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
         task = get_current();
         signum = SIGETX;
     }
-	return 0;
-}
-
-ssize_t hb100_read(struct file *filp, char __user *buf, size_t len,loff_t * off)
-{
-	//copy_to_user(buf, state, 1);
 	return 0;
 }
 
@@ -167,10 +160,6 @@ static int __init ModuleInit(void)
   //configure the GPIO as input
   gpio_direction_input(GPIO_25_IN);
   
-  /*
-  ** I have commented the below few lines, as gpio_set_debounce is not supported 
-  ** in the Raspberry pi. So we are using EN_DEBOUNCE to handle this in this driver.
-  */ 
   //Debounce the button with a delay of 200ms
   if(gpio_set_debounce(GPIO_25_IN, 200) < 0){
     pr_err("ERROR: gpio_set_debounce - %d\n", GPIO_25_IN);
