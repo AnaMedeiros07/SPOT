@@ -1,0 +1,1 @@
+cmd_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/I2C_Driver/modules.order := {   echo /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/I2C_Driver/i2c.ko; :; } | awk '!x[$$0]++' - > /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/I2C_Driver/modules.order

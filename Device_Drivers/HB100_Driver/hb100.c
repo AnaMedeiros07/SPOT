@@ -82,10 +82,6 @@ struct file_operations hb100_fops = {
 	.unlocked_ioctl = hb100_ioctl,
 };
 
-MODULE_LICENSE("GPL v2");
-MODULE_AUTHOR("Leonardo Ciocari");
-MODULE_DESCRIPTION("Raspberry Pi / BCM2711 Soft-UART Driver");
-
 int hb100_major = 60;
 
 bool state = 0;
@@ -159,13 +155,7 @@ static int __init ModuleInit(void)
   
   //configure the GPIO as input
   gpio_direction_input(GPIO_25_IN);
-  
-  //Debounce the button with a delay of 200ms
-  if(gpio_set_debounce(GPIO_25_IN, 200) < 0){
-    pr_err("ERROR: gpio_set_debounce - %d\n", GPIO_25_IN);
-    //goto r_gpio_in;
-  }
-  
+    
   //Get the IRQ number for our GPIO
   GPIO_irqNumber = gpio_to_irq(GPIO_25_IN);
   pr_info("GPIO_irqNumber = %d\n", GPIO_irqNumber);

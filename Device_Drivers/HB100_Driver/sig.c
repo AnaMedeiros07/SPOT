@@ -37,10 +37,6 @@ int main()
     int32_t value, number;
     struct sigaction act;
  
-    printf("*********************************\n");
-    printf("*******WWW.EmbeTronicX.com*******\n");
-    printf("*********************************\n");
- 
     /* install ctrl-c interrupt handler to cleanup at exit */
     sigemptyset (&act.sa_mask);
     act.sa_flags = (SA_SIGINFO | SA_RESETHAND);
