@@ -56,7 +56,7 @@ int main()
     printf("Installed signal handler for SIGETX = %d\n", SIGETX);
  
     printf("\nOpening Driver\n");
-    fd = open("/dev/softuart", O_RDWR);
+    fd = open("/dev/hb100_device", O_RDWR);
     if(fd < 0) {
             printf("Cannot open device file...\n");
             return 0;

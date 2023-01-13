@@ -48,16 +48,7 @@ static irqreturn_t gpio_irq_handler(int irq,void *dev_id)
 {
   static unsigned long flags = 0;
   struct kernel_siginfo info;
-
-#ifdef EN_DEBOUNCE
-   unsigned long diff = jiffies - old_jiffie;
-   if (diff < 20)
-   {
-     return IRQ_HANDLED;
-   }
-  
-  old_jiffie = jiffies;
-#endif  
+ 
   local_irq_save(flags);
   pr_info("Interrupt Occurred");
   
@@ -180,13 +171,11 @@ static int __init ModuleInit(void)
   ** I have commented the below few lines, as gpio_set_debounce is not supported 
   ** in the Raspberry pi. So we are using EN_DEBOUNCE to handle this in this driver.
   */ 
-//#ifndef EN_DEBOUNCE
   //Debounce the button with a delay of 200ms
   if(gpio_set_debounce(GPIO_25_IN, 200) < 0){
     pr_err("ERROR: gpio_set_debounce - %d\n", GPIO_25_IN);
     //goto r_gpio_in;
   }
-//#endif
   
   //Get the IRQ number for our GPIO
   GPIO_irqNumber = gpio_to_irq(GPIO_25_IN);
