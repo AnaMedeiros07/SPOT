@@ -1,0 +1,1 @@
+cmd_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.mod := { echo  /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o;  echo; } > /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.mod
