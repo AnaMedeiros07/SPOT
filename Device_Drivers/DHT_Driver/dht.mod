@@ -1,2 +1,2 @@
-/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o
+/home/francisco/Desktop/DHT11/dht.o
 

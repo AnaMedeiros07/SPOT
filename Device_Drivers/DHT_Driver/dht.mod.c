@@ -30,15 +30,23 @@ __used __section("__versions") = {
 	{ 0x1f3ac02b, "cdev_del" },
 	{ 0xbc6cff2b, "class_destroy" },
 	{ 0x87447f11, "device_destroy" },
+	{ 0xfe990052, "gpio_free" },
+	{ 0x47229b5c, "gpio_request" },
 	{ 0x7b5cc495, "device_create" },
 	{ 0xebe637dc, "__class_create" },
 	{ 0x417ad940, "cdev_add" },
 	{ 0x628ec589, "cdev_init" },
 	{ 0xe3ec2f2b, "alloc_chrdev_region" },
+	{ 0x9f49dcc4, "__stack_chk_fail" },
+	{ 0x6db81eac, "gpiod_get_raw_value" },
+	{ 0xcf441394, "gpiod_direction_input" },
+	{ 0xeae3dfd6, "__const_udelay" },
+	{ 0xebad1472, "gpiod_direction_output_raw" },
+	{ 0xf62472ea, "gpio_to_desc" },
 	{ 0xc5850110, "printk" },
 };
 
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "FBE53F442DADBEDF79F924B");
+MODULE_INFO(srcversion, "3FDA8F7143ED0ED26F9B284");
