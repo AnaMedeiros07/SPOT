@@ -1,0 +1,1 @@
+cmd_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/MQ2/mq2.mod := { echo  /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/MQ2/mq2.o;  echo; } > /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/MQ2/mq2.mod
