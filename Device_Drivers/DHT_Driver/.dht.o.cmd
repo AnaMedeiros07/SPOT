@@ -989,6 +989,9 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o :
   include/linux/pinctrl/machine.h \
   include/linux/gpio/consumer.h \
     $(wildcard include/config/gpio/sysfs.h) \
+  include/linux/delay.h \
+  arch/arm64/include/generated/asm/delay.h \
+  include/asm-generic/delay.h \
 
 /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o: $(deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o)
 

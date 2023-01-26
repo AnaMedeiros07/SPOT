@@ -15,10 +15,14 @@
 #include <linux/gpio.h>
 #include <linux/delay.h>
 
+#define mem_size        1024
+
 #define GPIO_4 (4)
 #define MAXTIMINGS	85
 
 MODULE_LICENSE("GPL v2");
+
+uint8_t *kernel_buffer;
 
 dev_t dev = 0;
 static struct class *dev_class;
@@ -106,8 +110,12 @@ for ( i = 0; i < MAXTIMINGS; i++ )
 	}else  {
     pr_info("Data not good, skip\n");
 	}
-
-  return 0;
+  if( copy_to_user(buf, kernel_buffer, mem_size) )
+    {
+            pr_err("Data Read : Err!\n");
+    }
+  
+  return mem_size;
 }
 
 static ssize_t dht_write(struct file *filp, const char *buf, size_t len, loff_t * off)
