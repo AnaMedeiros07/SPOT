@@ -13,22 +13,28 @@
 #include <linux/uaccess.h>
 #include <linux/cdev.h>
 #include <linux/gpio.h>
+#include <linux/slab.h>
 
 #define GPIO_18 (18)
+
+#define mem_size 1024
+
+MODULE_LICENSE("GPL v2");
 
 dev_t dev = 0;
 static struct class *dev_class;
 static struct cdev mq2_cdev;
 
+uint8_t *kernel_buffer;
+
 int mq2_open(struct inode *, struct file *);
 int mq2_release(struct inode *, struct file *);
-long mq2_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
+static ssize_t mq2_read(struct file *filp, char __user *buf, size_t len,loff_t * off);
 
 struct file_operations mq2_fops = {
 	.open           = mq2_open,
 	.release        = mq2_release,
   .read           = mq2_read,
-	.unlocked_ioctl = mq2_ioctl,
 };
 
 int mq2_major = 60;
@@ -43,11 +49,7 @@ int mq2_open(struct inode *inode, struct file *filp)
 
 int mq2_release(struct inode *inode, struct file *filp)
 {
-	struct task_struct *ref_task = get_current();
 	printk("Device Driver Closed");
-
-	if(ref_task == task)
-		task = NULL;
 	return 0;
 }
 
@@ -57,16 +59,16 @@ static ssize_t mq2_read(struct file *filp, char __user *buf, size_t len, loff_t 
   
   //reading GPIO value
   gpio_state = gpio_get_value(GPIO_18);
-  
+  snprintf(kernel_buffer, mem_size , "%d", gpio_state);
   //write to user
   len = 1;
-  if( copy_to_user(buf, &gpio_state, len) > 0) {
+  if( copy_to_user(buf, kernel_buffer, mem_size) > 0) {
     pr_err("ERROR: Not all the bytes have been copied to user\n");
   }
   
   pr_info("Read function : GPIO_21 = %d \n", gpio_state);
   
-  return gpio_state;
+  return mem_size;
 }
 //--------------------------------------------------------------------------------------
 
@@ -96,6 +98,14 @@ static int __init ModuleInit(void)
     goto r_device;
   }
   
+  //Allocate Kernel Buffer space
+
+  if((kernel_buffer = kmalloc(mem_size, GFP_KERNEL)) == 0 ){
+    pr_info("Cannot allocate memory in kernel");
+    goto r_device;
+  }
+
+
   //Input GPIO configuratioin
   //Checking the GPIO is valid or not
   if(gpio_is_valid(GPIO_18) == false){
