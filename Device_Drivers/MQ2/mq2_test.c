@@ -7,7 +7,8 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <signal.h>
- 
+
+int8_t mq2_read_buf[256];
  
 int main()
 {
@@ -21,8 +22,8 @@ int main()
             return 0;
     }
  
-    read(fd, value, sizeof(value));
-    printf("Value: %d",value);
+    read(fd, mq2_read_buf, 256);
+    printf("Value: %s\n",mq2_read_buf);
     printf("Closing Driver\n");
     close(fd);
 }

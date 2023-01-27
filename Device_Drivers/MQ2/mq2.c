@@ -17,7 +17,7 @@
 
 #define GPIO_18 (18)
 
-#define mem_size 1024
+#define mem_size 256
 
 MODULE_LICENSE("GPL v2");
 
@@ -66,7 +66,7 @@ static ssize_t mq2_read(struct file *filp, char __user *buf, size_t len, loff_t 
     pr_err("ERROR: Not all the bytes have been copied to user\n");
   }
   
-  pr_info("Read function : GPIO_21 = %d \n", gpio_state);
+  pr_info("Read function : GPIO_18 = %d \n", gpio_state);
   
   return mem_size;
 }

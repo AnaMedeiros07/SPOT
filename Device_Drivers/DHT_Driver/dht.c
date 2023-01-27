@@ -14,8 +14,9 @@
 #include <linux/cdev.h>
 #include <linux/gpio.h>
 #include <linux/delay.h>
+#include <linux/slab.h>
 
-#define mem_size        1024
+#define mem_size        256
 
 #define GPIO_4 (4)
 #define MAXTIMINGS	85
@@ -33,15 +34,12 @@ int dht_release(struct inode *, struct file *);
 static ssize_t dht_read(struct file *filp, char __user *buf, size_t len,loff_t * off);
 static ssize_t dht_write(struct file *filp, const char *buf, size_t len, loff_t * off);
 
-long dht_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
-
 struct file_operations dht_fops = {
 	.owner = THIS_MODULE,
   .open = dht_open,
 	.release = dht_release,
   .read = dht_read,
   .write = dht_write,
-	.unlocked_ioctl = dht_ioctl,
 };
 
 int dht_open(struct inode *inode, struct file *filp)
@@ -101,19 +99,25 @@ for ( i = 0; i < MAXTIMINGS; i++ )
 		}
 	}
  
-	if ( (j >= 40) &&
-	     (dht11_dat[4] == ( (dht11_dat[0] + dht11_dat[1] + dht11_dat[2] + dht11_dat[3])) ) )
-	{
-		f = dht11_dat[2] * 9. / 5. + 32;
-		printk( "Humidity = %d.%d %% Temperature = %d.%d C\n",
-			dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
-	}else  {
+	if ( (j >= 40) && (dht11_dat[4] == ( (dht11_dat[0] + dht11_dat[1] + dht11_dat[2] + dht11_dat[3]) ) ) )
+  {
+    f = dht11_dat[2] * 9. / 5. + 32;
+    printk( "Humidity = %d.%d %% Temperature = %d.%d C\n",
+      dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
+    
+    snprintf(kernel_buffer, mem_size , "Humidity = %d.%d %% Temperature = %d.%d C\n", 
+      dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
+  }
+  else  
+  {
     pr_info("Data not good, skip\n");
+    snprintf(kernel_buffer, mem_size , "Data not good");
 	}
+  
   if( copy_to_user(buf, kernel_buffer, mem_size) )
-    {
-            pr_err("Data Read : Err!\n");
-    }
+  {
+          pr_err("Data Read : Err!\n");
+  }
   
   return mem_size;
 }
@@ -121,12 +125,6 @@ for ( i = 0; i < MAXTIMINGS; i++ )
 static ssize_t dht_write(struct file *filp, const char *buf, size_t len, loff_t * off)
 {
   return 0;
-}
-
-
-long dht_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-{
-	return 0;
 }
 
 static int __init ModuleInit(void)
@@ -155,6 +153,11 @@ static int __init ModuleInit(void)
     goto r_device;
   }
   
+  if((kernel_buffer = kmalloc(mem_size, GFP_KERNEL)) == 0 ){
+    pr_info("Cannot allocate memory in kernel");
+    goto r_device;
+  }
+
   if(gpio_is_valid(GPIO_4) == 0){
     pr_err("GPIO %d is not valid\n", GPIO_4);
     goto r_gpio_in;
