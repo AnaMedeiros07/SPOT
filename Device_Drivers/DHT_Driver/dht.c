@@ -102,16 +102,16 @@ for ( i = 0; i < MAXTIMINGS; i++ )
 	if ( (j >= 40) && (dht11_dat[4] == ( (dht11_dat[0] + dht11_dat[1] + dht11_dat[2] + dht11_dat[3]) ) ) )
   {
     f = dht11_dat[2] * 9. / 5. + 32;
-    printk( "Humidity = %d.%d %% Temperature = %d.%d C\n",
+    printk( "Humidity = %d.%d Temperature = %d.%d C\n",
       dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
     
-    snprintf(kernel_buffer, mem_size , "Humidity = %d.%d %% Temperature = %d.%d C\n", 
+    snprintf(kernel_buffer, mem_size , "%d.%d %d.%d ", 
       dht11_dat[0], dht11_dat[1], dht11_dat[2], dht11_dat[3]);
   }
   else  
   {
-    pr_info("Data not good, skip\n");
-    snprintf(kernel_buffer, mem_size , "Data not good");
+    pr_info("Checksum failed\n");
+    snprintf(kernel_buffer, mem_size , "Checksum failed");
 	}
   
   if( copy_to_user(buf, kernel_buffer, mem_size) )
@@ -191,6 +191,7 @@ r_unreg:
 static void __exit ModuleExit(void)
 {
   gpio_free(GPIO_4);
+  kfree(kernel_buffer);
   device_destroy(dev_class,dev);
   class_destroy(dev_class);
   cdev_del(&dht_cdev);

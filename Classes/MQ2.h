@@ -1,5 +1,5 @@
-#ifndef __DHT11_H_
-#define __DHT11_H_
+#ifndef __MQ2_H_
+#define __MQ2_H_
 
 #include <iostream>
 #include <stdlib.h>
@@ -8,23 +8,20 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
 
-
-class DHT11
+class MQ2
 {
     private:
 
-        int fd;
+        int mq2_file;
 
     public:
 
-        DHT11(void);
+        MQ2(void);
+        
+        ~MQ2(void);
 
-        ~DHT11(void);
-
-        float* ReadValues();
+        int getStatus(void);
 };
-
 
 #endif
