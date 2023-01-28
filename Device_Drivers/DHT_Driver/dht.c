@@ -3,12 +3,12 @@
 #include <linux/module.h>
 #include <linux/timer.h>
 #include <linux/device.h>
-#include <linux/err.h>
 #include <linux/hrtimer.h>
 #include <linux/sched.h>
 #include <linux/string.h>
 #include <linux/interrupt.h>
 #include <linux/ioctl.h>
+#include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/cdev.h>

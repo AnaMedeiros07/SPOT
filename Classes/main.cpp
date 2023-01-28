@@ -1,16 +1,13 @@
 #include "CSensor.h"
-#include "CDHT11.h"
+#include "CDht11.h"
+#include "CMq2.h"
 #include <stdio.h>
 
 int main()
 {
-    CDHT11 dht11;
+    CMq2 mq2;
 
-    dht11.ReadSensor();
-
-    dht11.GetTemperature();
-
-    dht11.GetHumidity();
+    printf("Value %d\n", mq2.getStatus());
 
     return 0;
 }

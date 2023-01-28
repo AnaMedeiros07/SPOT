@@ -11,7 +11,7 @@
 
 #define mem_size 5
 
-class CDHT11
+class CDht11
 {
     private:
 
@@ -22,9 +22,9 @@ class CDHT11
 
     public:
 
-        CDHT11(void);
+        CDht11(void);
 
-        ~CDHT11(void);
+        ~CDht11(void);
 
         int ReadSensor(void);
 

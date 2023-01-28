@@ -3,7 +3,7 @@
 #include <linux/module.h>
 #include <linux/timer.h>
 #include <linux/device.h>
-#include <linux/err.h>
+#include <linux/errno.h>
 #include <linux/hrtimer.h>
 #include <linux/sched.h>
 #include <linux/string.h>
@@ -17,15 +17,13 @@
 
 #define GPIO_18 (18)
 
-#define mem_size 256
-
 MODULE_LICENSE("GPL v2");
 
 dev_t dev = 0;
 static struct class *dev_class;
 static struct cdev mq2_cdev;
 
-uint8_t *kernel_buffer;
+uint8_t kernel_buffer;
 
 int mq2_open(struct inode *, struct file *);
 int mq2_release(struct inode *, struct file *);
@@ -59,16 +57,17 @@ static ssize_t mq2_read(struct file *filp, char __user *buf, size_t len, loff_t 
   
   //reading GPIO value
   gpio_state = gpio_get_value(GPIO_18);
-  snprintf(kernel_buffer, mem_size , "%d", gpio_state);
+  kernel_buffer = gpio_get_value(GPIO_18);
+  //snprintf(kernel_buffer, mem_size , "%d", gpio_state);
   //write to user
-  len = 1;
-  if( copy_to_user(buf, kernel_buffer, mem_size) > 0) {
-    pr_err("ERROR: Not all the bytes have been copied to user\n");
+  printk("%d", kernel_buffer);
+  if( copy_to_user(buf, &kernel_buffer, 1)) {
+    pr_err("ERROR\n");
   }
   
   pr_info("Read function : GPIO_18 = %d \n", gpio_state);
   
-  return mem_size;
+  return 0;
 }
 //--------------------------------------------------------------------------------------
 
@@ -99,12 +98,6 @@ static int __init ModuleInit(void)
   }
   
   //Allocate Kernel Buffer space
-
-  if((kernel_buffer = kmalloc(mem_size, GFP_KERNEL)) == 0 ){
-    pr_info("Cannot allocate memory in kernel");
-    goto r_device;
-  }
-
 
   //Input GPIO configuratioin
   //Checking the GPIO is valid or not

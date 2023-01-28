@@ -1,5 +1,5 @@
-#ifndef __MQ2_H_
-#define __MQ2_H_
+#ifndef __CMQ2_H_
+#define __CMQ2_H_
 
 #include <iostream>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-class MQ2
+class CMq2
 {
     private:
 
@@ -17,9 +17,9 @@ class MQ2
 
     public:
 
-        MQ2(void);
+        CMq2(void);
         
-        ~MQ2(void);
+        ~CMq2(void);
 
         int getStatus(void);
 };

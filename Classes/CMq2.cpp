@@ -1,6 +1,6 @@
-#include "MQ2.h"
+#include "CMq2.h"
 
-MQ2::MQ2()
+CMq2::CMq2()
 {
     printf("\nOpening Driver\n");
     mq2_file = open("/dev/mq2_device", O_RDWR);
@@ -9,12 +9,16 @@ MQ2::MQ2()
     }
 }
 
-MQ2::~MQ2(void)
+CMq2::~CMq2(void)
 {
-
+    close(mq2_file);
 }
 
-int MQ2::getStatus(void)
+int CMq2::getStatus(void)
 {
+    uint8_t value = 0;
 
+    read(mq2_file, &value, 1);
+
+    return value;
 }

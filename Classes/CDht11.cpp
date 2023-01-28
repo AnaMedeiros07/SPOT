@@ -1,6 +1,6 @@
-#include"CDHT11.h"
+#include"CDht11.h"
 
-CDHT11::CDHT11()
+CDht11::CDht11()
 {
     printf("\nOpening Driver\n");
     dht_file = open("/dev/dht_device", O_RDWR);
@@ -9,21 +9,18 @@ CDHT11::CDHT11()
     }
 }
 
-CDHT11::~CDHT11()
+CDht11::~CDht11()
 {
     close(dht_file);
 }
 
-int CDHT11::ReadSensor(void)
+int CDht11::ReadSensor(void)
 {
     if(!read(dht_file, dht_read_buf, 256))
         return 1;
 
-    printf("Read Buffer: %s\n",dht_read_buf);
-
     if(!strcmp(dht_read_buf,"Checksum failed"))
     {
-        printf("Read Failed\n");
         return 1;
     }
 
@@ -31,25 +28,19 @@ int CDHT11::ReadSensor(void)
 
     temperature = (float)atof(s);
 
-    printf("Temperature: %f \n", temperature);
-
     s = strtok(NULL, " ");
 
     humidity = (float)atof(s);
 
-    printf("Humidity: %f \n", humidity);
-
     return 0;
 }
 
-float CDHT11::GetTemperature(void)
+float CDht11::GetTemperature(void)
 {
-    printf("Temperature: %f \n", temperature);
     return temperature;
 }
 
-float CDHT11::GetHumidity(void)
+float CDht11::GetHumidity(void)
 {
-    printf("Humidity: %f \n", humidity);
     return humidity;
 }
