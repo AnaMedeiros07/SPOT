@@ -16,17 +16,12 @@ CDht11::~CDht11()
 
 int CDht11::ReadSensor(void)
 {
-    if(read(dht_file, dht_read_buf, 5))
+    if(!read(dht_file, &sensor, sizeof(sensor)))
         return 1;
 
-    char* s = strtok(dht_read_buf, " ");
-
-    temperature = (float)atof(s);
-
-    s = strtok(NULL, " ");
-
-    humidity = (float)atof(s);
-
+    temperature = sensor.temperature_int + sensor.temperature_dec/10.0;
+    humidity = sensor.humidity_int + sensor.humidity_dec/10.0;
+    
     return 0;
 }
 

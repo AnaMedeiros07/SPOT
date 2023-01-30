@@ -14,12 +14,19 @@ CMq2::~CMq2(void)
     close(mq2_file);
 }
 
+int CMq2::ReadSensor(void)
+{
+    bool value = 0;
+
+    if(!read(mq2_file, &value, 1) < 0)
+        return 1;
+
+    mq2_value = value;
+
+    return 0;
+}
+
 int CMq2::getStatus(void)
 {
-    uint8_t value = 0;
-
-    if(read(mq2_file, &value, 1) < 0)
-        printf("Error");
-
-    return value;
+    return mq2_value;
 }

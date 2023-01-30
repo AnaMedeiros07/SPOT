@@ -8,15 +8,22 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 
-#define mem_size 5
+typedef struct DHT{
+    unsigned char data[5];
+    char temperature_int = 0;
+    char temperature_dec = 0;
+    char humidity_int = 0;
+    char humidity_dec = 0;
+} dht_t;
 
 class CDht11
 {
     private:
 
         int dht_file;
-        char dht_read_buf[mem_size];
+        dht_t sensor;
         float temperature = 0;
         float humidity = 0;
 

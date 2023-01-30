@@ -14,12 +14,15 @@ class CMq2
     private:
 
         int mq2_file;
+        bool mq2_value; //active on 0
 
     public:
 
         CMq2(void);
         
         ~CMq2(void);
+
+        int ReadSensor(void);
 
         int getStatus(void);
 };

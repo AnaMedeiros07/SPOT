@@ -30,5 +30,8 @@ int main(void)
     printf("Data %d.%d %d.%d %d\n", sensor.data[0], sensor.data[1], sensor.data[2], sensor.data[3], sensor.data[4]);
     
     printf("Final Data %d.%d %d.%d\n", sensor.temperature_int, sensor.temperature_dec, sensor.humidity_int, sensor.humidity_dec);
+    
+    float temperature = sensor.temperature_int + sensor.temperature_dec/10.0;
+    
     return 0;  
 }
