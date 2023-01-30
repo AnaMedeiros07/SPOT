@@ -17,8 +17,8 @@ class CDht11
 
         int dht_file;
         char dht_read_buf[mem_size];
-        float temperature;
-        float humidity;
+        float temperature = 0;
+        float humidity = 0;
 
     public:
 

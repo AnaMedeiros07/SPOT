@@ -15,6 +15,8 @@
 
 #define REG_CURRENT_TASK _IOW('a','a',int32_t*)
 
+void sig_event_handler(int, siginfo_t *, void *);
+
 class CHb100
 {
     private:
@@ -27,8 +29,5 @@ class CHb100
 
         ~CHb100(void);
 
-        void sig_event_handler(int, siginfo_t *, void *);
-};
-
-
+}
 #endif

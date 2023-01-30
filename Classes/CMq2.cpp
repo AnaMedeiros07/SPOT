@@ -18,7 +18,8 @@ int CMq2::getStatus(void)
 {
     uint8_t value = 0;
 
-    read(mq2_file, &value, 1);
+    if(read(mq2_file, &value, 1) < 0)
+        printf("Error");
 
     return value;
 }

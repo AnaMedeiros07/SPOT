@@ -2,7 +2,7 @@
 
 CDht11::CDht11()
 {
-    printf("\nOpening Driver\n");
+    printf("\nOpening Driver Dht\n");
     dht_file = open("/dev/dht_device", O_RDWR);
     if(dht_file < 0) {
             printf("Cannot open device file...\n");
@@ -16,13 +16,8 @@ CDht11::~CDht11()
 
 int CDht11::ReadSensor(void)
 {
-    if(!read(dht_file, dht_read_buf, 256))
+    if(read(dht_file, dht_read_buf, 5))
         return 1;
-
-    if(!strcmp(dht_read_buf,"Checksum failed"))
-    {
-        return 1;
-    }
 
     char* s = strtok(dht_read_buf, " ");
 

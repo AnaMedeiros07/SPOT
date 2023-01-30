@@ -91,7 +91,7 @@ float UPSHat::get_voltage(void)
     }
 }
 
-float UPSHat::get_percetage(void)
+float UPSHat::get_percentage(void)
 {
     float voltage = get_voltage();
     float p = (voltage - 6.8)/1.4*100;

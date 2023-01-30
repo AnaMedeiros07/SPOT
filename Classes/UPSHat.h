@@ -31,7 +31,7 @@ class UPSHat
 
         float get_voltage(void);
         
-        float get_percetage(void);
+        float get_percentage(void);
         
         int get_smoke(void);
 };

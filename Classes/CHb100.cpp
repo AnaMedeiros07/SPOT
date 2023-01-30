@@ -1,5 +1,7 @@
 #include "CHb100.h"
 
+
+
 CHb100::CHb100(void)
 {
     int32_t number;

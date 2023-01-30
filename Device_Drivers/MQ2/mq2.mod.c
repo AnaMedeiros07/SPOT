@@ -38,6 +38,7 @@ __used __section("__versions") = {
 	{ 0x417ad940, "cdev_add" },
 	{ 0x628ec589, "cdev_init" },
 	{ 0xe3ec2f2b, "alloc_chrdev_region" },
+	{ 0x9f49dcc4, "__stack_chk_fail" },
 	{ 0x6cbbfc54, "__arch_copy_to_user" },
 	{ 0x6db81eac, "gpiod_get_raw_value" },
 	{ 0xf62472ea, "gpio_to_desc" },
@@ -47,4 +48,4 @@ __used __section("__versions") = {
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "62C387F8D57C0E876573881");
+MODULE_INFO(srcversion, "026E59BB350C38D0B191773");
