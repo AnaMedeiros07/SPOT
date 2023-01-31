@@ -27,8 +27,9 @@ UPSHat::UPSHat()
 
 UPSHat::~UPSHat()
 {
-
+    close(file);
 }
+
 static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command,
                                      int size, union i2c_smbus_data *data)
 {
@@ -50,6 +51,7 @@ bool UPSHat::i2c_write(int addr, int bank_addr, int value)
     else 
         return true;
 }
+
 float UPSHat::i2c_read(int addr, int bank_addr)
 {
     union i2c_smbus_data data;
@@ -94,7 +96,7 @@ float UPSHat::get_voltage(void)
 float UPSHat::get_percentage(void)
 {
     float voltage = get_voltage();
-    float p = (voltage - 6.8)/1.4*100;
+    float p = (voltage - 6.7)/1.4*100;
     if(p > 100)
         p = 100.0;
     if(p < 0)

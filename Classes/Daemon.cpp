@@ -75,10 +75,9 @@ int main(int argc, char *argv[])
     CMq2 mq2;
     CDht11 dht11;
 
-    float percentage;
+    float percentage = 0;
     float temperature;
     float humidity;
-    bool motion;
     int smoke;
 
     //Message Queue
@@ -89,13 +88,16 @@ int main(int argc, char *argv[])
     while (1)
     {
         
+        //Read Sensors and update variables
+        dht11.ReadSensor();
+        mq2.ReadSensor();
+
         //percentage = charger.get_percentage();
         smoke = mq2.getStatus();
-        dht11.ReadSensor();
         temperature = dht11.GetTemperature();
         humidity = dht11.GetHumidity();
         
-        snprintf(msg, MAX_MSG_LEN, "%f %d %f %f", percentage, smoke, temperature, humidity);
+        snprintf(msg, MAX_MSG_LEN, "%f %d %0.2f %0.2f", percentage, smoke, temperature, humidity);
 
         send_messagequeue(msg);
         // enviar valores por message queue

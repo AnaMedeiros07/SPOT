@@ -118,8 +118,6 @@ static ssize_t dht_read(struct file *filp, char __user *buf, size_t len, loff_t 
   } else  
   {
       pr_info("Checksum failed\n");
-      //printk("Data %d.%d %d.%d %d\n", sensor.data[0], sensor.data[1], sensor.data[2], sensor.data[3], sensor.data[4]);
-      //printk("Check: %d \n",sensor.data[0] + sensor.data[1] + sensor.data[2] + sensor.data[3]);
       return 0;
   }
   

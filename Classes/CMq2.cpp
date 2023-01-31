@@ -16,11 +16,10 @@ CMq2::~CMq2(void)
 
 int CMq2::ReadSensor(void)
 {
-    bool value = 0;
+    int value = 0;
 
     if(!read(mq2_file, &value, 1) < 0)
         return 1;
-
     mq2_value = value;
 
     return 0;

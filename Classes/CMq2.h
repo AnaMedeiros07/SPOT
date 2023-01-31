@@ -14,7 +14,7 @@ class CMq2
     private:
 
         int mq2_file;
-        bool mq2_value; //active on 0
+        int mq2_value; //active on 0
 
     public:
 
