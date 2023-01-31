@@ -32,10 +32,16 @@ CHb100::~CHb100(void)
     close(fd);
 }
 
+int CHb100::AssociateSem(sem_t semaphore)
+{
+    motion_sem = semaphore;
+    return 0;
+}
+
 void CHb100::sig_event_handler(int n, siginfo_t* info, void* unused)
 {
     if(n = SIGETX)
     {
-        printf("Hello\n");
+        sem_post(&motion_sem);
     }
 }

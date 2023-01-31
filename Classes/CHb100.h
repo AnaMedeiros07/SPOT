@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <signal.h>
+#include <semaphore.h>
 
 #define SIGETX 44
 
@@ -20,14 +21,19 @@ class CHb100
     private:
 
         int fd;
-
+        static sem_t motion_sem;
+        
+        void static sig_event_handler(int, siginfo_t *, void *);
+    
     public:
 
         CHb100();
 
         ~CHb100();
 
-        void static sig_event_handler(int, siginfo_t *, void *);
+        int AssociateSem(sem_t);
+
+        
 };
 
 #endif
