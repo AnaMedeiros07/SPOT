@@ -1,7 +1,5 @@
 #include "CHb100.h"
 
-
-
 CHb100::CHb100(void)
 {
     int32_t number;
@@ -20,10 +18,24 @@ CHb100::CHb100(void)
         close(fd);
         exit(1);
     }
+
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = (SA_SIGINFO | SA_RESTART);
+    act.sa_sigaction = sig_event_handler;
+    sigaction(SIGETX, &act, NULL);
+
     printf("Done!!!\n");
 }
 
 CHb100::~CHb100(void)
 {
     close(fd);
+}
+
+void CHb100::sig_event_handler(int n, siginfo_t* info, void* unused)
+{
+    if(n = SIGETX)
+    {
+        printf("Hello\n");
+    }
 }
