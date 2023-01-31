@@ -2,7 +2,6 @@
 
 CDht11::CDht11()
 {
-    printf("\nOpening Driver Dht\n");
     dht_file = open("/dev/dht_device", O_RDWR);
     if(dht_file < 0) {
             printf("Cannot open device file...\n");

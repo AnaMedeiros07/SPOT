@@ -8,11 +8,12 @@
 #include <fcntl.h>
 #include <time.h>
 #include <signal.h>
-#include "UPSHat.h"
-#include "CMq2.h"
-#include "CDht11.h"
 #include <pthread.h>
 #include <mqueue.h>
+
+#include "CUpsHat.h"
+#include "CMq2.h"
+#include "CDht11.h"
 
 #define MSGQOBJ_NAME "/myqueue"
 #define MAX_MSG_LEN 80
@@ -58,20 +59,17 @@ int main(int argc, char *argv[])
         syslog(LOG_ERR, "%s\n", "setsid");
         exit(EXIT_FAILURE);
     }
+
     // make '/' the root directory
     if (chdir("/") < 0)
     { // on error exit
         syslog(LOG_ERR, "%s\n", "chdir");
         exit(EXIT_FAILURE);
     }
-    umask(0);             // read and write permission
-    close(STDIN_FILENO);  // close standard input file descriptor
-    close(STDOUT_FILENO); // close standard output file descriptor
-    close(STDERR_FILENO); // close standard error file descriptor
 
     // Sensor Objects
 
-    UPSHat charger;
+    CUpsHat ups;
     CMq2 mq2;
     CDht11 dht11;
 
@@ -82,8 +80,12 @@ int main(int argc, char *argv[])
 
     //Message Queue
     char msg[MAX_MSG_LEN];
-
-
+    
+    // read and write permission
+    umask(0);  
+    close(STDIN_FILENO);  // close standard input file descriptor
+    close(STDOUT_FILENO); // close standard output file descriptor
+    close(STDERR_FILENO); // close standard error file descriptor
 
     while (1)
     {
@@ -91,18 +93,19 @@ int main(int argc, char *argv[])
         //Read Sensors and update variables
         dht11.ReadSensor();
         mq2.ReadSensor();
+        ups.updateValues();
 
-        //percentage = charger.get_percentage();
+        percentage = ups.getPercentage();
         smoke = mq2.getStatus();
         temperature = dht11.GetTemperature();
         humidity = dht11.GetHumidity();
         
-        snprintf(msg, MAX_MSG_LEN, "%f %d %0.2f %0.2f", percentage, smoke, temperature, humidity);
+        snprintf(msg, MAX_MSG_LEN, "%0.2f %d %0.2f %0.2f", percentage, smoke, temperature, humidity);
 
         send_messagequeue(msg);
         // enviar valores por message queue
 
-        sleep(0.5);
+        sleep(1);
     }
     exit(EXIT_SUCCESS);
 }
