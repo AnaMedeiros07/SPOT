@@ -48,13 +48,13 @@ typedef struct DHT{
 
 static int dht_open(struct inode *inode, struct file *file)
 {
-  pr_info("Device File Opened\n");
+  pr_info("DHT: Device File Opened\n");
   return 0;
 }
 
 static int dht_release(struct inode *inode, struct file *file)
 {
-  pr_info("Device File Closed\n");
+  pr_info("DHT: Device File Closed\n");
   return 0;
 }
 
@@ -139,48 +139,48 @@ static int __init dht_driver_init(void)
 {
   /*Allocating Major number*/
   if((alloc_chrdev_region(&dev, 0, 1, "dht_Dev")) <0){
-    pr_err("Cannot allocate major number\n");
+    pr_err("DHT: Cannot allocate major number\n");
     goto r_unreg;
   }
-  pr_info("Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
+  pr_info("DHT: Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
  
   /*Creating cdev structure*/
   cdev_init(&dht_cdev,&fops);
  
   /*Adding character device to the system*/
   if((cdev_add(&dht_cdev,dev,1)) < 0){
-    pr_err("Cannot add the device to the system\n");
+    pr_err("DHT: Cannot add the device to the system\n");
     goto r_del;
   }
  
   /*Creating struct class*/
   if(IS_ERR(dev_class = class_create(THIS_MODULE,"dht_class"))){
-    pr_err("Cannot create the struct class\n");
+    pr_err("DHT: Cannot create the struct class\n");
     goto r_class;
   }
  
   /*Creating device*/
   if(IS_ERR(device_create(dev_class,NULL,dev,NULL,"dht_device"))){
-    pr_err( "Cannot create the Device \n");
+    pr_err( "DHT: Cannot create the Device \n");
     goto r_device;
   }
   
   //Checking the GPIO is valid or not
   if(gpio_is_valid(GPIO_4) == false){
-    pr_err("GPIO %d is not valid\n", GPIO_4);
+    pr_err("DHT: GPIO %d is not valid\n", GPIO_4);
     goto r_device;
   }
   
   //Requesting the GPIO
   if(gpio_request(GPIO_4,"GPIO_4") < 0){
-    pr_err("ERROR: GPIO %d request\n", GPIO_4);
+    pr_err("DHT: ERROR: GPIO %d request\n", GPIO_4);
     goto r_gpio;
   }
   
   //configure the GPIO as input
   gpio_direction_input(GPIO_4);
   
-  pr_info("Device Driver Inserted\n");
+  pr_info("DHT: Device Driver Inserted\n");
   return 0;
  
 r_gpio:
@@ -204,7 +204,7 @@ static void __exit dht_driver_exit(void)
   class_destroy(dev_class);
   cdev_del(&dht_cdev);
   unregister_chrdev_region(dev, 1);
-  pr_info("Device Driver Removed\n");
+  pr_info("DHT: Device Driver Removed\n");
 }
  
 module_init(dht_driver_init);

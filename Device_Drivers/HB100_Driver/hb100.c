@@ -50,7 +50,7 @@ static irqreturn_t gpio_irq_handler(int irq,void *dev_id)
   struct kernel_siginfo info;
  
   local_irq_save(flags);
-  pr_info("Interrupt Occurred");
+  pr_info("HB100: Interrupt Occurred");
   
   memset(&info, 0, sizeof(struct kernel_siginfo));
   info.si_signo = SIGETX;
@@ -58,9 +58,9 @@ static irqreturn_t gpio_irq_handler(int irq,void *dev_id)
   info.si_int = 1;
 
   if (task != NULL) {
-        printk(KERN_INFO "Sending signal to app\n");
+        printk(KERN_INFO "HB100: Sending signal to app\n");
           if(send_sig_info(SIGETX, &info, task) < 0) {
-              printk(KERN_INFO "Unable to send signal\n");
+              printk(KERN_INFO "HB100: Unable to send signal\n");
           }	
     }
 
@@ -88,14 +88,14 @@ bool state = 0;
 
 int hb100_open(struct inode *inode, struct file *filp)
 {
-	printk("Device Driver Opened");
+	printk("HB100: Device Driver Opened");
 	return 0;
 }
 
 int hb100_release(struct inode *inode, struct file *filp)
 {
 	struct task_struct *ref_task = get_current();
-	printk("Device Driver Closed");
+	printk("HB100: Device Driver Closed");
 
 	if(ref_task == task)
 		task = NULL;
@@ -105,7 +105,7 @@ int hb100_release(struct inode *inode, struct file *filp)
 long hb100_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	if (cmd == REG_CURRENT_TASK) {
-        printk(KERN_INFO "REG_CURRENT_TASK\n");
+        printk(KERN_INFO "HB100: REG_CURRENT_TASK\n");
         task = get_current();
         signum = SIGETX;
     }
@@ -118,7 +118,7 @@ static int __init ModuleInit(void)
 {
   /*Allocating Major number*/
   if((alloc_chrdev_region(&dev, 0, 1, "hb100_Dev")) <0){
-    pr_err("Cannot allocate major number\n");
+    pr_err("HB100: Cannot allocate major number\n");
     goto r_unreg;
   }
   pr_info("Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
@@ -126,30 +126,30 @@ static int __init ModuleInit(void)
   cdev_init(&hb100_cdev,&hb100_fops);
   /*Adding character device to the system*/
   if((cdev_add(&hb100_cdev,dev,1)) < 0){
-    pr_err("Cannot add the device to the system\n");
+    pr_err("HB100: Cannot add the device to the system\n");
     goto r_del;
   }
   /*Creating struct class*/
   if(IS_ERR(dev_class = class_create(THIS_MODULE,"hb100_class"))){
-    pr_err("Cannot create the struct class\n");
+    pr_err("HB100: Cannot create the struct class\n");
     goto r_class;
   }
   /*Creating device*/
   if(IS_ERR(device_create(dev_class,NULL,dev,NULL,"hb100_device"))){
-    pr_err( "Cannot create the Device \n");
+    pr_err( "HB100: Cannot create the Device \n");
     goto r_device;
   }
   
   //Input GPIO configuratioin
   //Checking the GPIO is valid or not
   if(gpio_is_valid(GPIO_25_IN) == false){
-    pr_err("GPIO %d is not valid\n", GPIO_25_IN);
+    pr_err("HB100: GPIO %d is not valid\n", GPIO_25_IN);
     goto r_gpio_in;
   }
   
   //Requesting the GPIO
   if(gpio_request(GPIO_25_IN,"GPIO_25_IN") < 0){
-    pr_err("ERROR: GPIO %d request\n", GPIO_25_IN);
+    pr_err("HB100: ERROR: GPIO %d request\n", GPIO_25_IN);
     goto r_gpio_in;
   }
   
@@ -158,18 +158,18 @@ static int __init ModuleInit(void)
     
   //Get the IRQ number for our GPIO
   GPIO_irqNumber = gpio_to_irq(GPIO_25_IN);
-  pr_info("GPIO_irqNumber = %d\n", GPIO_irqNumber);
+  pr_info("HB100: GPIO_irqNumber = %d\n", GPIO_irqNumber);
   
   if (request_irq(GPIO_irqNumber,             //IRQ number
                   (void *)gpio_irq_handler,   //IRQ handler
                   IRQF_TRIGGER_RISING,        //Handler will be called in raising edge
                   "hb100_device",               //used to identify the device name using this IRQ
                   NULL)) {                    //device id for shared IRQ
-    pr_err("my_device: cannot register IRQ ");
+    pr_err("HB100: my_device: cannot register IRQ ");
     goto r_gpio_in;
   }
   
-  pr_info("Device Driver Insert...Done!!!\n");
+  pr_info("HB100: Device Driver Insert...Done!!!\n");
   return 0;
 r_gpio_in:
   gpio_free(GPIO_25_IN);
@@ -194,7 +194,7 @@ static void __exit ModuleExit(void)
   class_destroy(dev_class);
   cdev_del(&hb100_cdev);
   unregister_chrdev_region(dev, 1);
-  pr_info("Device Driver Remove...Done!!\n");
+  pr_info("HB100: Device Driver Remove...Done!!\n");
 }
 //--------------------------------------------------------------------------------------
 module_init(ModuleInit);

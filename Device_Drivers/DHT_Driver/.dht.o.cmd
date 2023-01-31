@@ -868,6 +868,7 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o :
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
+  include/linux/cdev.h \
   include/linux/device.h \
     $(wildcard include/config/debug/devres.h) \
     $(wildcard include/config/energy/model.h) \
@@ -907,26 +908,9 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o :
   include/linux/device/driver.h \
   arch/arm64/include/asm/device.h \
   include/linux/pm_wakeup.h \
-  include/linux/interrupt.h \
-    $(wildcard include/config/irq/forced/threading.h) \
-    $(wildcard include/config/generic/irq/probe.h) \
-    $(wildcard include/config/irq/timings.h) \
-  include/linux/irqreturn.h \
-  include/linux/hardirq.h \
-  include/linux/context_tracking_state.h \
-    $(wildcard include/config/context/tracking.h) \
-  include/linux/ftrace_irq.h \
-    $(wildcard include/config/hwlat/tracer.h) \
-  include/linux/vtime.h \
-    $(wildcard include/config/virt/cpu/accounting.h) \
-    $(wildcard include/config/irq/time/accounting.h) \
-  arch/arm64/include/asm/hardirq.h \
-  arch/arm64/include/asm/irq.h \
-  include/asm-generic/irq.h \
-  arch/arm64/include/asm/kvm_arm.h \
-  arch/arm64/include/asm/esr.h \
-  include/linux/irq_cpustat.h \
-  include/linux/cdev.h \
+  include/linux/delay.h \
+  arch/arm64/include/generated/asm/delay.h \
+  include/asm-generic/delay.h \
   include/linux/gpio.h \
     $(wildcard include/config/gpiolib.h) \
     $(wildcard include/config/arch/have/custom/gpio/h.h) \
@@ -947,6 +931,7 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o :
     $(wildcard include/config/generic/irq/legacy.h) \
     $(wildcard include/config/generic/irq/multi/handler.h) \
   include/linux/irqhandler.h \
+  include/linux/irqreturn.h \
   include/linux/io.h \
   include/linux/slab.h \
     $(wildcard include/config/debug/slab.h) \
@@ -959,6 +944,8 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o :
   include/linux/kasan.h \
     $(wildcard include/config/kasan/generic.h) \
     $(wildcard include/config/kasan/inline.h) \
+  arch/arm64/include/asm/irq.h \
+  include/asm-generic/irq.h \
   arch/arm64/include/generated/asm/irq_regs.h \
   include/asm-generic/irq_regs.h \
   include/linux/irqdesc.h \
@@ -989,9 +976,6 @@ deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o :
   include/linux/pinctrl/machine.h \
   include/linux/gpio/consumer.h \
     $(wildcard include/config/gpio/sysfs.h) \
-  include/linux/delay.h \
-  arch/arm64/include/generated/asm/delay.h \
-  include/asm-generic/delay.h \
 
 /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o: $(deps_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/DHT_Driver/dht.o)
 

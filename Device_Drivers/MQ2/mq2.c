@@ -35,13 +35,13 @@ static struct file_operations fops =
 
 static int mq2_open(struct inode *inode, struct file *file)
 {
-  pr_info("Device File Opened\n");
+  pr_info("MQ2: Device File Opened\n");
   return 0;
 }
 
 static int mq2_release(struct inode *inode, struct file *file)
 {
-  pr_info("Device File Closed\n");
+  pr_info("MQ2: Device File Closed\n");
   return 0;
 }
 
@@ -55,10 +55,10 @@ static ssize_t mq2_read(struct file *filp, char __user *buf, size_t len, loff_t 
   //write to user
   len = 1;
   if( copy_to_user(buf, &gpio_state, len) > 0) {
-    pr_err("ERROR: Data not copied\n");
+    pr_err("MQ2: ERROR: Data not copied\n");
   }
   
-  pr_info("Read function : GPIO_18 = %d \n", gpio_state);
+  pr_info("MQ2: Read function : GPIO_18 = %d \n", gpio_state);
   
   return len;
 }
@@ -72,48 +72,48 @@ static int __init mq2_driver_init(void)
 {
   /*Allocating Major number*/
   if((alloc_chrdev_region(&dev, 0, 1, "mq2_Dev")) <0){
-    pr_err("Cannot allocate major number\n");
+    pr_err("MQ2: Cannot allocate major number\n");
     goto r_unreg;
   }
-  pr_info("Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
+  pr_info("MQ2: Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
  
   /*Creating cdev structure*/
   cdev_init(&mq2_cdev,&fops);
  
   /*Adding character device to the system*/
   if((cdev_add(&mq2_cdev,dev,1)) < 0){
-    pr_err("Cannot add the device to the system\n");
+    pr_err("MQ2: Cannot add the device to the system\n");
     goto r_del;
   }
  
   /*Creating struct class*/
   if(IS_ERR(dev_class = class_create(THIS_MODULE,"mq2_class"))){
-    pr_err("Cannot create the struct class\n");
+    pr_err("MQ2: Cannot create the struct class\n");
     goto r_class;
   }
  
   /*Creating device*/
   if(IS_ERR(device_create(dev_class,NULL,dev,NULL,"mq2_device"))){
-    pr_err( "Cannot create the Device \n");
+    pr_err( "MQ2: Cannot create the Device \n");
     goto r_device;
   }
   
   //Checking the GPIO is valid or not
   if(gpio_is_valid(GPIO_18) == false){
-    pr_err("GPIO %d is not valid\n", GPIO_18);
+    pr_err("MQ2: GPIO %d is not valid\n", GPIO_18);
     goto r_device;
   }
   
   //Requesting the GPIO
   if(gpio_request(GPIO_18,"GPIO_18") < 0){
-    pr_err("ERROR: GPIO %d request\n", GPIO_18);
+    pr_err("MQ2: ERROR: GPIO %d request\n", GPIO_18);
     goto r_gpio;
   }
   
   //configure the GPIO as input
   gpio_direction_input(GPIO_18);
   
-  pr_info("Device Driver Inserted\n");
+  pr_info("MQ2: Device Driver Inserted\n");
   return 0;
  
 r_gpio:
@@ -137,7 +137,7 @@ static void __exit mq2_driver_exit(void)
   class_destroy(dev_class);
   cdev_del(&mq2_cdev);
   unregister_chrdev_region(dev, 1);
-  pr_info("Device Driver Removed\n");
+  pr_info("MQ2: Device Driver Removed\n");
 }
  
 module_init(mq2_driver_init);
