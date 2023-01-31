@@ -23,9 +23,9 @@ class CHb100
 
     public:
 
-        CHb100(void);
+        CHb100();
 
-        ~CHb100(void);
+        ~CHb100();
 
         void static sig_event_handler(int, siginfo_t *, void *);
 };
