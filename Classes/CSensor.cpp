@@ -1,10 +1,7 @@
 #include"CSensor.h"
 
-CSensor::CSensor(double value ,double up_limit ,double l_limit)
+CSensor::CSensor()
 {
-    this->value = value;
-    this->upper_limit = up_limit;
-    this->lower_limit = l_limit;
 }
 CSensor::~CSensor()
 {

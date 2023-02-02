@@ -1,4 +1,5 @@
-#include"CSPOT.h"
+#include "CSPOT.h"
+
 CSPOT::~CSPOT(){
 
 }
@@ -6,41 +7,92 @@ CSPOT::~CSPOT(){
 CSPOT::CSPOT(){
     
 }
-
-bool CSPOT::ConfigureThreads(int)
+string* CSPOT::ReceiveMsg()
 {
-    pthread_attr_setinherished(&thread_attr,PTHREAF_EXPLICIT_SCHED);
-    pthread_attr_setschedpolicy(&thread_attr,SCHED_FIFO);
-    thread_param.shed_priority = thread_priority;
-    pthread_attr_setschedparam(&thread_attr,&thread_param);
+    char msgcontent[MAX_MSG_LEN];
+    unsigned int sender;
+    int i = 0;
+    string result[10];
+    string word;
+    mqd_t msgqread_id = mq_open(MSGQOBJ_NAME, O_RDWR); // open the message queue;
+    if (msgqread_id == (mqd_t)-1) {
+        perror("In mq_open()");
+        exit(1);
+    }
+    int msgsz = mq_receive(msgqread_id, msgcontent, MAX_MSG_LEN, &sender);
+    if (msgsz == -1) {
+        perror("In mq_receive()");
+        exit(1);
+    }
+
+    istringstream ss(msgcontent);
+
+    while (ss >> word)
+    {
+        result[i]=word;
+        i++;
+    }
+
+    return result;
     
 }
-void InitSemaphores()
+void CSPOT::InitSemaphores()
 {
     sem_init(&SMotionSensor,0,0);
     sem_init(&SReadServer,0,0);
+    sem_init(&SNotification,0,0);
+}
+void CSPOT::InitSignal()
+{
+    CHb100 MotionSensor;
+    struct sigaction act;
+
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = (SA_SIGINFO | SA_RESTART);
+    act.sa_sigaction = sig_event_handler;
+    sigaction(SIGETX, &act, NULL);
 }
 bool CSPOT::CreateThreads(void)
 {
-    int tUpdate = pthread_create(&tUpdateSystem,NULL,UpdateSystem,NULL);
-    int tSmoke = pthread_create(&tSmoke,NULL,Smoke,NULL);
-    int tNotification = pthread_create(&tNotification,NULL,Notification,NULL);
-    int tReadApp = pthread_create(&tReadApp,NULL,ReadApp,NULL);
+    // Set Motion Thread Priority
+    Motion_sched.sched_priority=1;
+    pthread_attr_setdetachstate(&Motion_attr,PTHREAD_CREATE_JOINABLE);
+    pthread_attr_setschedparam (& Motion_attr ,& Motion_sched ) ;
+    pthread_attr_init (& Motion_attr ) ;
 
-    if( tUpdate || tSmoke || tNotification || tReadApp )
+    // Set Update System Thread Priority
+    Update_sched.sched_priority=3;
+    pthread_attr_setdetachstate(&Update_attr,PTHREAD_CREATE_JOINABLE);
+    pthread_attr_setschedparam (&Update_attr ,& Update_sched ) ;
+    pthread_attr_init (&Update_attr ) ;
+
+    // Set Notification System Thread Priority
+    Update_sched.sched_priority= 2;
+    pthread_attr_setdetachstate(&Notification_attr,PTHREAD_CREATE_JOINABLE);
+    pthread_attr_setschedparam (&Notification_attr ,&Notification_sched ) ;
+    pthread_attr_init (&Notification_attr ) ;
+
+    int res = pthread_create(&tUpdateSystem,&Update_attr,UpdateSystem,this);
+    //int tSmoke = pthread_create(&tSmoke,NULL,Smoke,NULL);
+    res = pthread_create(&tMotion,&Motion_attr,Motion,this);
+    res = pthread_create(&tNotification,&Notification_attr,Notification,this);
+   // int tReadApp = pthread_create(&tReadApp,NULL,ReadApp,NULL);
+
+    if( res)
     {
         cout << " ERROR in the thread creation "<<endl;
+        return false;
     }
+    return true;
 }
-int CSPOT::InitMultithereading(void){
-   
-}
+
 bool CSPOT::ConfigureServer(void)
 {
+    CServer server;
        /*Server Creation*/
     if(server.Creat_Socket())
     {
-        server.Indentify_socket();
+        server.Identify_socket();
         return true;
     }
 
@@ -50,49 +102,61 @@ bool CSPOT::ConfigureServer(void)
 bool CSPOT::ConfigureDatabase(void)
 {
     /*Create Database and the Tables*/
-    server.createDB(DATABASE):
+    CServer server;
+    server.createDB(DATABASE);
     server.createTable(DATABASE);
 }
-void CSPOT::Motion(void)
+void* CSPOT::Motion(void* threadid)
 {
-    // enviar a notificação de movimento
+    while(1)
+    {
+        sem_wait(&SMotionSensor);
+        cout << " Motion Detected!!"<<endl;
+    }
 }
-void CSPOT::*Notification()
+void* CSPOT::Notification(void* threadid)
 {
-    //verificar qual a notificacao a enviar
+    while(1)
+    {
+        sem_wait(&SNotification);
+        
+    }
 
 }
-void CSPOT::*ReadApp(void)
+void* CSPOT::ReadApp(void* threadid)
 {
  //start a connection
  // execute read function
  // close connection
 }
-void CSPOT::*UpdateSystem(void)
+void* CSPOT::UpdateSystem(void* threadid)
 {
     int LimH=0,LimT=0,LimS=0;
-    /*============= Read From Message Queue ==================  */
-    msgqread_id = mq_open(MSGQOBJ_NAME, O_RDWR); // open the message queue;
-     if (msgqread_id == (mqd_t)-1) {
-        perror("In mq_open()");
-        exit(1);
-    }
-    msgsz = mq_receive(msgqread_id, msgcontent, MAX_MSG_LEN, &sender);
-    if (msgsz == -1) {
-        perror("In mq_receive()");
-        exit(1);
-    }
-    /*=============================================================*/
+    string *Values;
+    CSensor TemperatureSensor, HumididySensor,SmokeSensor;
+    while(1)
+    {
+        cout << " Thread Update System !"<<endl;
+        /*============= Read From Message Queue ==================  */
+        ReceiveMsg();
+        /*=============================================================*/
+                /* Set Sensor Numbers */
+        /*_______________________________________________*/
+        TemperatureSensor.Set_Value(stof(Values[3]));
+        HumididySensor.Set_Value(stof(Values[2]));
+        SmokeSensor.Set_Value(stof(Values[1]));
+        /*_________________________________________________*/
+        if(Values[1]== "0"){
+            sem_post(&SNotification);
             
-            /* Set Sensor Numbers */
-    /*_______________________________________________*/
-    TemperatureSensor.Set_Value(atof(msgsz[2]));
-    HumididySensor.Set_Value(atof(msgsz[3]));
-    SmokeSensor.Set_Value(atof(msgsz[1]));
-    /*_________________________________________________*/
-
-    
-    
-
+        }
+    }
 }
  
+void CSPOT::sig_event_handler(int n, siginfo_t* info, void* unused)
+{
+    if(n = SIGETX)
+    {
+        sem_post(&SMotionSensor);
+    }
+}

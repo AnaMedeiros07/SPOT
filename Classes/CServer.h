@@ -39,7 +39,7 @@ class CServer
     ~CServer(void);
     //---------------For http connection----------------
     bool Creat_Socket(void);
-    void Indentify_socket(char*);
+    void Identify_socket();
     void ConnectServer(void);
     void EndConnection(void);
     void SendData(char*);
@@ -57,7 +57,7 @@ class CServer
     //___________________________________________________
     //______________Update Values in Database___________________
       int updateUserNumber(string , string );
-      int updateUserSensor(string value,string type,string user )
+      int updateUserSensor(string value,string type,string user );
       int updateUserLimits(string lower_limit,string upper_limit,string type,string user );
       char* GetNumber(string name);
       char* GetUserID(string name );

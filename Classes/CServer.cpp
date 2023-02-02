@@ -28,7 +28,7 @@ bool CServer::Creat_Socket(void)
     fcntl(server_fd, F_SETFL, flags | O_NONBLOCK);
     return true;
 }
-void CServer::Indentify_socket(char* IP)
+void CServer::Identify_socket()
 {
 	memset((char *)&address, 0, sizeof(address));
 	address.sin_family = AF_INET;

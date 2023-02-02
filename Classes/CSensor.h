@@ -12,7 +12,7 @@ class CSensor
         
     public:
         
-        CSensor(double, double, double);
+        CSensor();
 
         ~CSensor();
 
