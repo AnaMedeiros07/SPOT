@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <semaphore.h>
 #include <mqueue.h>
+#include <bits/stdc++.h>
 
 #include "CSensor.h"
 #include "CCamera.h"
@@ -23,7 +24,7 @@
 
 #define MSGQVALUES    "/msgvalues"
 
-#define MAX_MSG_LEN     1000
+#define MAX_MSG_LEN     10000
 
 #define DATABASE "DATABASE.db"
 
@@ -38,7 +39,9 @@ class CSPOT{
         struct sched_param Motion_sched,Update_sched,Notification_sched;
         static sem_t SMotionSensor,SReadServer,SNotification;
         mqd_t msgqread_id;
-	public:
+	CHb100 MotionSensor;
+        
+        public:
         CSPOT(void);
         ~CSPOT(void);
         void InitSemaphores(void);
@@ -47,7 +50,7 @@ class CSPOT{
         void static sig_event_handler(int, siginfo_t*, void*);
         bool ConfigureServer(void);
         bool ConfigureDatabase(void);
-        static string* ReceiveMsg();
+        static int ReceiveMsg(string*);
         static void *ReadApp(void*);
         static void *UpdateSystem(void*);
         static void *Motion(void*);

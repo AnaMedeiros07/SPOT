@@ -1,13 +1,19 @@
 #include "CSPOT.h"
 
-CSPOT::~CSPOT(){
+sem_t CSPOT::SMotionSensor;
+sem_t CSPOT::SReadServer;
+sem_t CSPOT::SNotification;
 
+CSPOT::~CSPOT(){
+    sem_destroy(&SMotionSensor);
+    sem_destroy(&SReadServer);
+    sem_destroy(&SNotification);
 }
 
 CSPOT::CSPOT(){
     
 }
-string* CSPOT::ReceiveMsg()
+int CSPOT::ReceiveMsg(string* Values)
 {
     char msgcontent[MAX_MSG_LEN];
     unsigned int sender;
@@ -27,13 +33,16 @@ string* CSPOT::ReceiveMsg()
 
     istringstream ss(msgcontent);
 
+    std::cout << msgcontent << "\n";
+
     while (ss >> word)
     {
-        result[i]=word;
+        Values[i]=word;
         i++;
+        std::cout << word << "\n";
     }
 
-    return result;
+    return 0;
     
 }
 void CSPOT::InitSemaphores()
@@ -44,14 +53,9 @@ void CSPOT::InitSemaphores()
 }
 void CSPOT::InitSignal()
 {
-    CHb100 MotionSensor;
-    struct sigaction act;
-
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = (SA_SIGINFO | SA_RESTART);
-    act.sa_sigaction = sig_event_handler;
-    sigaction(SIGETX, &act, NULL);
+    MotionSensor.CreateSignalHandler(sig_event_handler);
 }
+
 bool CSPOT::CreateThreads(void)
 {
     // Set Motion Thread Priority
@@ -71,8 +75,9 @@ bool CSPOT::CreateThreads(void)
     pthread_attr_setdetachstate(&Notification_attr,PTHREAD_CREATE_JOINABLE);
     pthread_attr_setschedparam (&Notification_attr ,&Notification_sched ) ;
     pthread_attr_init (&Notification_attr ) ;
-
-    int res = pthread_create(&tUpdateSystem,&Update_attr,UpdateSystem,this);
+    
+    int res = 0;
+    res = pthread_create(&tUpdateSystem,&Update_attr,UpdateSystem,this);
     //int tSmoke = pthread_create(&tSmoke,NULL,Smoke,NULL);
     res = pthread_create(&tMotion,&Motion_attr,Motion,this);
     res = pthread_create(&tNotification,&Notification_attr,Notification,this);
@@ -118,6 +123,7 @@ void* CSPOT::Notification(void* threadid)
 {
     while(1)
     {
+        printf("Smoke Detected\n");
         sem_wait(&SNotification);
         
     }
@@ -132,13 +138,13 @@ void* CSPOT::ReadApp(void* threadid)
 void* CSPOT::UpdateSystem(void* threadid)
 {
     int LimH=0,LimT=0,LimS=0;
-    string *Values;
+    string Values[4];
     CSensor TemperatureSensor, HumididySensor,SmokeSensor;
     while(1)
     {
         cout << " Thread Update System !"<<endl;
         /*============= Read From Message Queue ==================  */
-        ReceiveMsg();
+        ReceiveMsg(Values);
         /*=============================================================*/
                 /* Set Sensor Numbers */
         /*_______________________________________________*/
@@ -155,7 +161,7 @@ void* CSPOT::UpdateSystem(void* threadid)
  
 void CSPOT::sig_event_handler(int n, siginfo_t* info, void* unused)
 {
-    if(n = SIGETX)
+    if(n == SIGETX)
     {
         sem_post(&SMotionSensor);
     }

@@ -8,8 +8,9 @@ int main()
     CSPOT spot;
 
     spot.InitSemaphores();
-    spot.CreateThreads();
     spot.InitSignal();
+    spot.CreateThreads();
+    
     while(1)
     {
         
