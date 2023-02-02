@@ -19,11 +19,6 @@ CHb100::CHb100(void)
         exit(1);
     }
 
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = (SA_SIGINFO | SA_RESTART);
-    act.sa_sigaction = sig_event_handler;
-    sigaction(SIGETX, &act, NULL);
-
     printf("Done!!!\n");
 }
 
@@ -32,16 +27,12 @@ CHb100::~CHb100(void)
     close(fd);
 }
 
-int CHb100::AssociateSem(sem_t semaphore)
+void CHb100::CreateSignalHandler(void(*handler)(int, siginfo_t*, void*))
 {
-    motion_sem = semaphore;
-    return 0;
-}
-
-void CHb100::sig_event_handler(int n, siginfo_t* info, void* unused)
-{
-    if(n = SIGETX)
-    {
-        sem_post(&motion_sem);
-    }
+    struct sigaction act;
+    
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = (SA_SIGINFO | SA_RESTART);
+    act.sa_sigaction = handler;
+    sigaction(SIGETX, &act, NULL);
 }

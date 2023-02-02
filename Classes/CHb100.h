@@ -21,9 +21,6 @@ class CHb100
     private:
 
         int fd;
-        static sem_t motion_sem;
-        
-        void static sig_event_handler(int, siginfo_t *, void *);
     
     public:
 
@@ -31,9 +28,8 @@ class CHb100
 
         ~CHb100();
 
-        int AssociateSem(sem_t);
+        void CreateSignalHandler(void(*)(int, siginfo_t*, void*));
 
-        
 };
 
 #endif
