@@ -27,11 +27,13 @@ static const struct modversion_info ____versions[]
 __used __section("__versions") = {
 	{ 0xfee48a5a, "module_layout" },
 	{ 0xc1514a3b, "free_irq" },
+	{ 0x2b68bd2f, "del_timer" },
 	{ 0x6091b333, "unregister_chrdev_region" },
 	{ 0x1f3ac02b, "cdev_del" },
 	{ 0xbc6cff2b, "class_destroy" },
 	{ 0x87447f11, "device_destroy" },
 	{ 0xfe990052, "gpio_free" },
+	{ 0xc6f46339, "init_timer_key" },
 	{ 0x92d5838e, "request_threaded_irq" },
 	{ 0xcdcef9e6, "gpiod_to_irq" },
 	{ 0xcf441394, "gpiod_direction_input" },
@@ -42,15 +44,17 @@ __used __section("__versions") = {
 	{ 0x417ad940, "cdev_add" },
 	{ 0x628ec589, "cdev_init" },
 	{ 0xe3ec2f2b, "alloc_chrdev_region" },
-	{ 0x9f49dcc4, "__stack_chk_fail" },
 	{ 0x4b0a3f52, "gic_nonsecure_priorities" },
 	{ 0xd697e69a, "trace_hardirqs_on" },
-	{ 0xaa9405fc, "send_sig_info" },
 	{ 0xec3d2e1b, "trace_hardirqs_off" },
+	{ 0x9f49dcc4, "__stack_chk_fail" },
+	{ 0xc38c83b8, "mod_timer" },
+	{ 0x15ba50a6, "jiffies" },
+	{ 0xaa9405fc, "send_sig_info" },
 	{ 0xc5850110, "printk" },
 };
 
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "2FD3665C1BE044657553B1D");
+MODULE_INFO(srcversion, "40A928E191E03004E654703");
