@@ -5,9 +5,9 @@ class CSensor
 {
     private:
         
-        double value;
-        double upper_limit;
-        double lower_limit;
+        float value;
+        float upper_limit;
+        float lower_limit;
         int device_driver_id;
         
     public:
@@ -16,11 +16,11 @@ class CSensor
 
         ~CSensor();
 
-        void Set_Value(double);
+        void Set_Value(float);
 
-        void Change_Limits(double,double);
+        void Change_Limits(float up_limit,float l_limit);
 
-        double Check_Sensor(void);
+        float Check_Sensor(void);
 
         int Sensor_Limits(void);
 };

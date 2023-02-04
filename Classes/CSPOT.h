@@ -40,7 +40,8 @@ class CSPOT{
         static sem_t SMotionSensor,SReadServer,SNotification;
         mqd_t msgqread_id;
 	CHb100 MotionSensor;
-        static CSensor TemperatureSensor, HumididySensor,SmokeSensor;
+        static CSensor TemperatureSensor, HumiditySensor,SmokeSensor;
+        static int SensorsStatus;
 
         public:
         CSPOT(void);

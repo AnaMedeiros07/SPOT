@@ -5,8 +5,10 @@ sem_t CSPOT::SReadServer;
 sem_t CSPOT::SNotification;
 
 CSensor CSPOT::TemperatureSensor;
-CSensor CSPOT::HumididySensor;
+CSensor CSPOT::HumiditySensor;
 CSensor CSPOT::SmokeSensor;
+
+int CSPOT::SensorsStatus = 0;
 
 CSPOT::~CSPOT(){
     sem_destroy(&SMotionSensor);
@@ -14,9 +16,12 @@ CSPOT::~CSPOT(){
     sem_destroy(&SNotification);
 }
 
-CSPOT::CSPOT(){
-    
+CSPOT::CSPOT()
+{
+    TemperatureSensor.Change_Limits(30.0,20.0);
+    HumiditySensor.Change_Limits(40.0,20.0);
 }
+
 int CSPOT::ReceiveMsg(string* Values)
 {
     char msgcontent[MAX_MSG_LEN];
@@ -55,6 +60,7 @@ void CSPOT::InitSemaphores()
     sem_init(&SReadServer,0,0);
     sem_init(&SNotification,0,0);
 }
+
 void CSPOT::InitSignal()
 {
     MotionSensor.CreateSignalHandler(sig_event_handler);
@@ -108,6 +114,7 @@ bool CSPOT::ConfigureServer(void)
     return false;
         
 }
+
 bool CSPOT::ConfigureDatabase(void)
 {
     /*Create Database and the Tables*/
@@ -115,6 +122,7 @@ bool CSPOT::ConfigureDatabase(void)
     server.createDB(DATABASE);
     server.createTable(DATABASE);
 }
+
 void* CSPOT::Motion(void* threadid)
 {
     while(1)
@@ -123,13 +131,44 @@ void* CSPOT::Motion(void* threadid)
         cout << " Motion Detected!!"<<endl;
     }
 }
+
 void* CSPOT::Notification(void* threadid)
 {
+    
+    char msg_1[200];
+    string msg;
     while(1)
     {
-        printf("Smoke Detected\n");
         sem_wait(&SNotification);
+        printf("Notification \n");
         
+        if(TemperatureSensor.Sensor_Limits() == 1)
+        {
+            sprintf(msg_1, "%0.2f", TemperatureSensor.Check_Sensor());
+            msg = msg + "Temperature Bellow " + msg_1 + " ";
+        }  
+        else if(TemperatureSensor.Sensor_Limits() == 2)
+        {
+            sprintf(msg_1, "%0.2f", TemperatureSensor.Check_Sensor());
+            msg = msg + "Temperature Above " + msg_1 + " ";
+        } 
+        if(HumiditySensor.Sensor_Limits() == 1)
+        {
+            sprintf(msg_1, "%0.2f", HumiditySensor.Check_Sensor());
+            msg = msg + "Humidity Bellow " + msg_1 + " ";
+        } 
+        else if(HumiditySensor.Sensor_Limits() == 2)
+        {
+            sprintf(msg_1, "%0.2f", HumiditySensor.Check_Sensor());
+            msg = msg + "Humidity Above " + msg_1 + " ";
+        } 
+        if(!SmokeSensor.Check_Sensor())
+            //sprintf(msg, "Smoke Detected ");
+            msg = msg + "Smoke Detected";
+
+        //printf("%s\n", msg);
+        cout << msg << "\n";
+        msg.clear();
     }
 
 }
@@ -141,7 +180,7 @@ void* CSPOT::ReadApp(void* threadid)
 }
 void* CSPOT::UpdateSystem(void* threadid)
 {
-    int LimH=0,LimT=0,LimS=0;
+    int LimH=0,LimT=0;
     string Values[4];
     while(1)
     {
@@ -151,14 +190,12 @@ void* CSPOT::UpdateSystem(void* threadid)
         /*=============================================================*/
                 /* Set Sensor Numbers */
         /*_______________________________________________*/
-        TemperatureSensor.Set_Value(stof(Values[3]));
-        HumididySensor.Set_Value(stof(Values[2]));
+        TemperatureSensor.Set_Value(stof(Values[2]));
+        HumiditySensor.Set_Value(stof(Values[3]));
         SmokeSensor.Set_Value(stof(Values[1]));
         /*_________________________________________________*/
-        if(Values[1]== "0"){
+        if(TemperatureSensor.Sensor_Limits() || HumiditySensor.Sensor_Limits() || !SmokeSensor.Check_Sensor())
             sem_post(&SNotification);
-            
-        }
     }
 }
  

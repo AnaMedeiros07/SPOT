@@ -2,24 +2,26 @@
 
 CSensor::CSensor()
 {
+
 }
+
 CSensor::~CSensor()
 {
 
 }
 
-void CSensor::Set_Value(double value)
+void CSensor::Set_Value(float value)
 {
     this->value = value;
 }
 
-void CSensor::Change_Limits(double up_limit,double l_limit)
+void CSensor::Change_Limits(float up_limit,float l_limit)
 {
     this->upper_limit = up_limit;
     this->lower_limit = l_limit;
 }
 
-double CSensor::Check_Sensor()
+float CSensor::Check_Sensor()
 {
  return this->value;
 }
