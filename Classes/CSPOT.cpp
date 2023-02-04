@@ -4,6 +4,10 @@ sem_t CSPOT::SMotionSensor;
 sem_t CSPOT::SReadServer;
 sem_t CSPOT::SNotification;
 
+CSensor CSPOT::TemperatureSensor;
+CSensor CSPOT::HumididySensor;
+CSensor CSPOT::SmokeSensor;
+
 CSPOT::~CSPOT(){
     sem_destroy(&SMotionSensor);
     sem_destroy(&SReadServer);
@@ -139,7 +143,6 @@ void* CSPOT::UpdateSystem(void* threadid)
 {
     int LimH=0,LimT=0,LimS=0;
     string Values[4];
-    CSensor TemperatureSensor, HumididySensor,SmokeSensor;
     while(1)
     {
         cout << " Thread Update System !"<<endl;

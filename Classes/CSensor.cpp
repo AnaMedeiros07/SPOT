@@ -31,7 +31,7 @@ int CSensor::Sensor_Limits(void)
     {
         check = 2;
     }
-    else if (this->value >= this->upper_limit)
+    else if (this->value <= this->lower_limit)
     {
         check = 1;
     }
