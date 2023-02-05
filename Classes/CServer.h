@@ -40,9 +40,12 @@ class CServer
     //---------------For http connection----------------
     bool Creat_Socket(void);
     void Identify_socket();
-    void ConnectServer(void);
+    int ConnectServer(void);
     void EndConnection(void);
     void SendData(char*);
+    int CheckSocket(void);
+    void ReceiveData(char*, int);
+
     //-----------------For Database ----------------------------------
     //____________create tables_________________________
       int createDB(const char* );
@@ -64,7 +67,6 @@ class CServer
     //______________________Auxiliar Function_________________________________
     string quotesql(const string& );
     int checklogin(string name,string password);
-    char* ReceiveData(void);
     char* ProcessRequest(string);
     
 

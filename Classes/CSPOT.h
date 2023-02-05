@@ -16,13 +16,13 @@
 #include "CSensor.h"
 #include "CCamera.h"
 #include "CHb100.h"
-#include "CServer.h"
 
 #define SIGETX 44
 
 #define MSGQOBJ_NAME    "/myqueue" // message that have the sensor values
 
-#define MSGQVALUES    "/msgvalues"
+#define MSGQRECEIVE_NAME    "/receivequeue"
+#define MSGQSEND_NAME       "/sendqueue"
 
 #define MAX_MSG_LEN     10000
 
@@ -32,16 +32,24 @@ using namespace std;
 
 class CSPOT{
 	private:
-	string status;
-        timer_t ISR_Receive_Data,ISR_Update_System;
-	pthread_t tUpdateSystem, tNotification,tMotion,tSensors,tReadApp; 
-        pthread_attr_t Motion_attr,Update_attr,Notification_attr;
-        struct sched_param Motion_sched,Update_sched,Notification_sched;
-        static sem_t SMotionSensor,SReadServer,SNotification;
-        mqd_t msgqread_id;
-	CHb100 MotionSensor;
+	
+        //Member Objects
+
         static CSensor TemperatureSensor, HumiditySensor,SmokeSensor;
-        static int SensorsStatus;
+        CHb100 MotionSensor;
+
+        //Threading Elements
+
+        pthread_t tUpdateSystem, tNotification,tMotion,tSensors,tReadApp; 
+        pthread_attr_t Motion_attr,Update_attr,Notification_attr, ReadApp_attr;
+        struct sched_param Motion_sched,Update_sched,Notification_sched,ReadApp_sched;
+        static sem_t SMotionSensor,SNotification;
+        static pthread_mutex_t sensor_resources;
+
+        mqd_t msgqread_id;
+
+        string status;
+        timer_t ISR_Receive_Data,ISR_Update_System;
 
         public:
         CSPOT(void);
@@ -53,6 +61,9 @@ class CSPOT{
         bool ConfigureServer(void);
         bool ConfigureDatabase(void);
         static int ReceiveMsg(string*);
+        static int ReceiveServerMsg(char*);
+        static int CheckReceivequeue();
+        static int SendServerMsg(char*);
         static void *ReadApp(void*);
         static void *UpdateSystem(void*);
         static void *Motion(void*);

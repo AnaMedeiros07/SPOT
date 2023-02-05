@@ -9,8 +9,9 @@ int main()
 
     spot.InitSemaphores();
     spot.InitSignal();
+    spot.ConfigureServer();
     spot.CreateThreads();
-    
+
     while(1)
     {
         
