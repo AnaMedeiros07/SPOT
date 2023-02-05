@@ -16,6 +16,7 @@
 #include "CSensor.h"
 #include "CCamera.h"
 #include "CHb100.h"
+#include "CDatabase.h"
 
 #define SIGETX 44
 
@@ -37,6 +38,7 @@ class CSPOT{
 
         static CSensor TemperatureSensor, HumiditySensor,SmokeSensor;
         CHb100 MotionSensor;
+        static CDatabase Database;
 
         //Threading Elements
 

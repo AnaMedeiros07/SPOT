@@ -10,6 +10,7 @@ int main()
     spot.InitSemaphores();
     spot.InitSignal();
     spot.ConfigureServer();
+    spot.ConfigureDatabase();
     spot.CreateThreads();
 
     while(1)

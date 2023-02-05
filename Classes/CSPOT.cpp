@@ -9,6 +9,7 @@ CSensor CSPOT::TemperatureSensor;
 CSensor CSPOT::HumiditySensor;
 CSensor CSPOT::SmokeSensor;
 
+CDatabase CSPOT::Database;
 
 CSPOT::~CSPOT(){
     sem_destroy(&SMotionSensor);
@@ -104,7 +105,7 @@ int CSPOT::SendServerMsg(char* msg)
         perror("In mq_open()");
         exit(1);
     }
-    mq_send(msgq_id, msg, MAX_MSG_LEN, msgprio);
+    mq_send(msgq_id, msg, strlen(msg)+1, msgprio);
     mq_close(msgq_id);
 }
 
@@ -174,6 +175,8 @@ bool CSPOT::ConfigureServer(void)
 bool CSPOT::ConfigureDatabase(void)
 {
     /*Create Database and the Tables*/
+    Database.createDB(DATABASE);
+    Database.createTable(DATABASE);
 }
 
 void* CSPOT::Motion(void* threadid)
@@ -236,6 +239,8 @@ void* CSPOT::ReadApp(void* threadid)
         // execute read function
         ReceiveServerMsg(msg);
         printf("Message: %s \n", msg);
+        //printf("Database Response: %s \n",);
+        SendServerMsg(msg);
         // close connection
         memset(msg,0,MAX_MSG_LEN);
         //pthread_mutex_unlock(&sensor_resources);

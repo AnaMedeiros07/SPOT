@@ -41,7 +41,7 @@ void receive_messagequeue(char* msg)
     char msgcontent[MAX_MSG_LEN];
     unsigned int sender;
     int i = 0;
-    mqd_t msgqread_id = mq_open(MSGQSEND_NAME, O_RDWR); // open the message queue;
+    mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
     if (msgqread_id == (mqd_t)-1) {
         perror("In mq_open()");
         exit(1);
@@ -86,6 +86,20 @@ int create_message_queue(void)
     mq_close(msgq_receive_id);
     mq_close(msgq_send_id);
     return 0;
+}
+
+int CheckSendqueue()
+{
+    mq_attr msgq_attr;
+    mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
+    mq_getattr(msgqread_id, &msgq_attr);
+    if(msgq_attr.mq_curmsgs == 0)
+    { 
+        mq_close(msgqread_id);
+        return 0;
+    }
+    mq_close(msgqread_id);
+    return 1;
 }
 
 int main(int argc, char *argv[])
@@ -137,20 +151,22 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        //Read Sensors and update variables
-        //printf("\n+++++++ Waiting for new connection ++++++++\n\n");
+        //Connect to server 
         server.ConnectServer();
-        
-        char buffer[30000] = {0};
-        
-        printf("%s\n",buffer );
+        //Receive and send data to main process
         server.ReceiveData(send_msg, MAX_MSG_LEN);
         send_messagequeue(send_msg);
+        
+        if(CheckSendqueue())
+        {
+            receive_messagequeue(receive_msg);
+            printf("On send %s \n", receive_msg);
+            server.SendData(receive_msg);
+            memset(receive_msg,0,MAX_MSG_LEN);
+        }
+
+        //Clear msg
         memset(send_msg,0,MAX_MSG_LEN);
-        //sleep(1);
-        //receive_messagequeue(receive_msg);
-        //printf("Message Queue %s\n", receive_msg);
-        // enviar valores por message queue
         server.EndConnection();
 
         //sleep(1);
