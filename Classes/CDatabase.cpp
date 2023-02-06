@@ -4,16 +4,7 @@ string CDatabase::ProcessRequest(string str){
 	istringstream ss(str);
     string word; // for storing each word
 	int check;
-	string result;
-	string temperature;
-	string humidity;
-	string smoke;
-	string motion;
-	string battery;
-	string upper_limitT;
-	string lower_limitT;
-	string upper_limitH;
-	string lower_limitH;
+	string result,temperature,humidity,smoke, motion, battery, upper_limitT, lower_limitT, upper_limitH, lower_limitH;
     string argv[50];
     int i=0;
     while (ss >> word)
