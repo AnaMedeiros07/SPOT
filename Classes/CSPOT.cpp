@@ -18,7 +18,7 @@ CSPOT::~CSPOT(){
 
 CSPOT::CSPOT()
 {
-    TemperatureSensor.Change_Limits(40.0,20.0);
+    TemperatureSensor.Change_Limits(40.0,10.0);
     HumiditySensor.Change_Limits(40.0,20.0);
 }
 

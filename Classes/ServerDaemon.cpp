@@ -59,7 +59,7 @@ int create_message_queue(void)
 {
     mqd_t msgq_send_id, msgq_receive_id;
     unsigned int msgprio = 1;
-    mq_attr send_attr;
+    mq_attr send_attr, receive_attr;
 
     msgq_send_id = mq_open(MSGQSEND_NAME, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG, NULL);
     msgq_receive_id = mq_open(MSGQRECEIVE_NAME, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG, NULL);
@@ -73,6 +73,7 @@ int create_message_queue(void)
         perror("In mq_open send()");
         return 1;
     }
+    //Certify that message queues are clean
     if(mq_getattr(msgq_send_id, &send_attr) == 0)
     {
         char msgcontent[MAX_MSG_LEN];
@@ -81,6 +82,16 @@ int create_message_queue(void)
         {
             mq_receive(msgq_send_id, msgcontent, MAX_MSG_LEN, &sender);
             send_attr.mq_curmsgs--;
+        }
+    }
+    if(mq_getattr(msgq_receive_id, &receive_attr) == 0)
+    {
+        char msgcontent[MAX_MSG_LEN];
+        unsigned int sender;
+        while(receive_attr.mq_curmsgs)
+        {
+            mq_receive(msgq_receive_id, msgcontent, MAX_MSG_LEN, &sender);
+            receive_attr.mq_curmsgs--;
         }
     }
     mq_close(msgq_receive_id);
@@ -93,6 +104,7 @@ int CheckSendqueue()
     mq_attr msgq_attr;
     mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
     mq_getattr(msgqread_id, &msgq_attr);
+    printf("Check: %i \n", msgq_attr.mq_curmsgs);
     if(msgq_attr.mq_curmsgs == 0)
     { 
         mq_close(msgqread_id);
@@ -157,6 +169,8 @@ int main(int argc, char *argv[])
         server.ReceiveData(send_msg, MAX_MSG_LEN);
         send_messagequeue(send_msg);
         
+        sleep(1);
+
         if(CheckSendqueue())
         {
             receive_messagequeue(receive_msg);
