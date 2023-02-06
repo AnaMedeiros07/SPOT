@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     }
 
     // Creating socket file descriptor
-    server.Creat_Socket();
+    server.Create_Socket();
     server.Identify_socket();
    
     //Message Queue

@@ -38,7 +38,7 @@ class CServer
 
     ~CServer(void);
     //---------------For http connection----------------
-    bool Creat_Socket(void);
+    bool Create_Socket(void);
     void Identify_socket();
     int ConnectServer(void);
     void EndConnection(void);

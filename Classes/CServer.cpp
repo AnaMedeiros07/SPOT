@@ -15,7 +15,7 @@ CServer::~CServer(void){
 
 }
 
-bool CServer::Creat_Socket(void)
+bool CServer::Create_Socket(void)
 {
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -62,7 +62,7 @@ void CServer::SendData(char* message)
 
 int CServer::CheckSocket(void)
 {
-
+    return 0;
 }
 
 void CServer::ReceiveData(char* msg, int msg_length)
