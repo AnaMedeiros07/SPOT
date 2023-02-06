@@ -19,22 +19,23 @@ class CDatabase
         int createTable(const char* );
     //______________________________________________
     //_______________Insert in the database__________________
-        int insertDataEventID(const char*,string ,string,string, string,string);
-        int insertDataSensorID(const char* ,string ,string ,string ,string ,string );
-        int insertDataHouseID(const char* ,string );
+        int insertDataSensorID(string ,string ,string ,string);
         int insertDataUserID(string ,string ,string );
-        int insertDataUserEntryID(const char* ,string ,string );
     //___________________________________________________
-    //______________Update Values in Database___________________
+    //______________Update and Get Values in Database___________________
         int updateUserNumber(string , string );
-        int updateUserSensor(string value,string type,string user );
-        int updateUserLimits(string lower_limit,string upper_limit,string type,string user );
-        char* GetNumber(string name);
-        char* GetUserID(string name );
+        int updateUserSensor(string, string);
+        int updateLowerLimits(string, string);
+        int updateUpperLimits(string, string);
+        string GetNumber(string);
+        string GetSensorValues(string);
+        string GetUppperSensorLimits(string);
+        string GetLowerSensorLimits(string);
+
     //______________________Auxiliar Function_________________________________
         string quotesql(const string& );
         int checklogin(string name,string password);
-        char* ProcessRequest(string);
+        string ProcessRequest(string);
 };
 
 #endif
