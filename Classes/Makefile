@@ -17,8 +17,8 @@ SPOT.elf: $(objects)
 	$(CXX) $(objects) -L $(LIBS) $(LDLIBS) -o $@
 
 %.o: %.cpp
-	$(CC) -c $< -o $(DEPS)$@ 
+	$(CXX) -c $< -o $(DEPS)$@ 
 
 .PHONY : clean
 clean:
-	rm -f SPOT.elf $(objects)
+	$(RM) -f SPOT.elf $(objects)
