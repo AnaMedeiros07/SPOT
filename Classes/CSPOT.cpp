@@ -233,17 +233,15 @@ void* CSPOT::ReadApp(void* threadid)
     char msg[MAX_MSG_LEN];
     while(1)
     {
-        //pthread_mutex_lock(&sensor_resources);
-        //printf("Read App Mutex\n");
-        //start a connection
-        // execute read function
+        printf("Read App Mutex\n");
+
         ReceiveServerMsg(msg);
         printf("Message: %s \n", msg);
+        
         //printf("Database Response: %s \n",);
+        
         SendServerMsg(msg);
-        // close connection
         memset(msg,0,MAX_MSG_LEN);
-        //pthread_mutex_unlock(&sensor_resources);
     }
     
 }
@@ -253,8 +251,7 @@ void* CSPOT::UpdateSystem(void* threadid)
     string Values[4];
     while(1)
     {
-        pthread_mutex_lock(&sensor_resources);
-        //cout << " Thread Update System !"<<endl;
+        cout << " Thread Update System !"<<endl;
         /*============= Read From Message Queue ==================  */
         ReceiveMsg(Values);
         /*=============================================================*/
@@ -266,10 +263,6 @@ void* CSPOT::UpdateSystem(void* threadid)
         /*_________________________________________________*/
         if(TemperatureSensor.Sensor_Limits() || HumiditySensor.Sensor_Limits() || !SmokeSensor.Check_Sensor())
             sem_post(&SNotification);
-
-        //if(CheckReceivequeue)
-            pthread_mutex_unlock(&sensor_resources);
-        //printf("Mutex Unlocked\n");
     }
 }
  
