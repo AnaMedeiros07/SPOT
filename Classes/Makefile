@@ -1,16 +1,24 @@
-CC = g++ 
-KDIR := ..
+CXX = aarch64-buildroot-linux-uclibc-g++
+
+KDIR := home/francisco/buildroot/buildroot-2022.08/output/host/bin/
 DEPS = ../Classes/
 
-output: CCamera.o CSensor.o main.o CHb100.o CSPOT.o CServer.o sqlite3.o
-	$(CC) -I $(KDIR) $(DEPS)CCamera.o $(DEPS)CSensor.o $(DEPS)main.o $(DEPS)CHb100.o $(DEPS)CSPOT.o 
-	$(DEPS)CServer.o $(DEPS)sqlite3.o -o $(DEPS)spot.elf
+LIBS = home/francisco/buildroot/buildroot-2022.08/output/host/aarch64-buildroot-linux-uclibc/sysroot/usr/lib
+
+LDLIBS = -lsqlite3 -lpthread
+
+export PATH = /home/francisco/buildroot/buildroot-2022.08/output/host/bin/
+
+objects = CCamera.o CSensor.o main.o CHb100.o CSPOT.o CDatabase.o
+
+#$(objects): %.o: %.cpp
+
+SPOT.elf: $(objects)
+	$(CXX) $(objects) -L $(LIBS) $(LDLIBS) -o $@
 
 %.o: %.cpp
-	$(CC) -c -I $(KDIR) $< -o $(DEPS)$@ 
+	$(CC) -c $< -o $(DEPS)$@ 
 
+.PHONY : clean
 clean:
-	rm $(DEPS)*.o $(DEPS)spot.elf
-
-run:
-	./$(DEPS)spot.elf
+	rm -f SPOT.elf $(objects)
