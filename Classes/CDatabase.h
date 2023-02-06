@@ -12,7 +12,7 @@ using namespace std;
 class CDatabase
 {
     private:
-
+    
     public:
     //____________create tables_________________________
         int createDB(const char* );
@@ -34,8 +34,11 @@ class CDatabase
 
     //______________________Auxiliar Function_________________________________
         string quotesql(const string& );
-        int checklogin(string name,string password);
+        int checklogin(string ,string );
+        string CheckLowerLimits(string );  
+        string CheckUpperLimits(string )
         string ProcessRequest(string);
+      
 };
 
 #endif

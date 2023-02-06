@@ -88,7 +88,7 @@ string CDatabase::quotesql( const string& word ) {
 int CDatabase::createDB(const char* s)
 {
 	sqlite3* DB;
-	
+	char* messageError;
 	int exit = 0;
 	exit = sqlite3_open(s, &DB);
 
@@ -99,9 +99,8 @@ int CDatabase::createDB(const char* s)
 
   int CDatabase::createTable(const char* s)
 {
-	sqlite3 *DB;
+	sqlite3* DB;
 	char* messageError;
-
 	string sql = 
 		//___________Create Sensor table_______________
 		"CREATE TABLE IF NOT EXISTS SENSOR("
@@ -143,7 +142,6 @@ int CDatabase::createDB(const char* s)
 {
 	sqlite3* DB;
 	char* messageError;
-	
 	string sql (
     "INSERT INTO USER (NAME, PASSWORD, NUMBER) VALUES ("
     + quotesql(name) + ","
@@ -164,10 +162,8 @@ int CDatabase::createDB(const char* s)
 	return 0;
 }
  int CDatabase::insertDataSensorID(string type,string value,string upper_limit,string lower_limit)
-{
-	sqlite3* DB;
+{	sqlite3* DB;
 	char* messageError;
-	
 	string sql (
     "INSERT INTO SENSOR (TYPE, VALUE, UPPER_LIMIT,LOWER_LIMIT) VALUES ("
     + quotesql(type) + ","
@@ -211,7 +207,6 @@ int CDatabase::updateUserNumber(string name, string number)
 {
 	sqlite3* DB;
 	char* messageError;
-
 	string sql("UPDATE USER SET NUMBER = " + quotesql(number) +" WHERE NAME = " + quotesql(name)+";");
 
 	int exit = sqlite3_open("DATABASE.db", &DB);
@@ -233,7 +228,6 @@ int CDatabase::updateUpperLimits(string type,string upper_limit)
 	sqlite3* DB;
 	char* messageError;
 	string sql("UPDATE SENSOR SET UPPER_LIMIT = " + quotesql(upper_limit) + " WHERE TYPE ="+ quotesql(type)+";");
-
 
 	int exit = sqlite3_open("DATABASE.db", &DB);
 	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here */
@@ -273,7 +267,6 @@ int CDatabase::updateUserSensor(string value,string type)
 	sqlite3* DB;
 	char* messageError;
 	string sql("UPDATE SENSOR SET VALUE = " + quotesql(value) + " WHERE TYPE ="+ quotesql(type)+";");
-
 
 	int exit = sqlite3_open("DATABASE.db", &DB);
 	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here */
@@ -370,5 +363,43 @@ string CDatabase::GetLowerSensorLimits(string name)
 	sqlite3_finalize(stmt);
 
 	
+	return number;
+}
+string CDatabase::CheckLowerLimits(string name)
+{
+	sqlite3* DB;
+	char* messageError;
+	string number = {0};
+	string sql = " SELECT VALUE FROM SENSOR WHERE TYPE = " + quotesql(name) + "AND LOWER_LIMIT > VALUE ;";
+	int exit = sqlite3_open("DATABASE.db", &DB);
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+	sqlite3_stmt *stmt;
+	exit = sqlite3_prepare_v2(DB, sql.c_str(), -1,&stmt, NULL);
+
+	while(sqlite3_step(stmt) ==SQLITE_ROW){
+		number = (char*)sqlite3_column_text(stmt, 0);
+	};
+
+	sqlite3_finalize(stmt);
+
+	return number;
+}
+string CDatabase::CheckUpperLimits(string name)
+{
+	sqlite3* DB;
+	char* messageError;
+	string number = {0};
+	string sql = " SELECT VALUE FROM SENSOR WHERE TYPE = " + quotesql(name) + "AND UPPER_LIMIT < VALUE ;";
+	int exit = sqlite3_open("DATABASE.db", &DB);
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+	sqlite3_stmt *stmt;
+	exit = sqlite3_prepare_v2(DB, sql.c_str(), -1,&stmt, NULL);
+
+	while(sqlite3_step(stmt) ==SQLITE_ROW){
+		number = (char*)sqlite3_column_text(stmt, 0);
+	};
+
+	sqlite3_finalize(stmt);
+
 	return number;
 }
