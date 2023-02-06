@@ -107,6 +107,7 @@ int CSPOT::SendServerMsg(char* msg)
     }
     mq_send(msgq_id, msg, strlen(msg)+1, msgprio);
     mq_close(msgq_id);
+    return 0;
 }
 
 void CSPOT::InitSemaphores()
@@ -177,6 +178,13 @@ bool CSPOT::ConfigureDatabase(void)
     /*Create Database and the Tables*/
     Database.createDB(DATABASE);
     Database.createTable(DATABASE);
+
+    Database.insertDataSensorID("temperature","0","30.0","20.0");
+    Database.insertDataSensorID("humidity","0","40.0","20.0");
+    Database.insertDataSensorID("battery","0","0","0");
+    Database.insertDataSensorID("motion","0","0","0");
+    Database.insertDataSensorID("smoke","1","0","0");
+    return true;
 }
 
 void* CSPOT::Motion(void* threadid)
@@ -197,31 +205,34 @@ void* CSPOT::Notification(void* threadid)
     {
         sem_wait(&SNotification);
         printf("Notification \n");
+
+        pthread_mutex_lock(&sensor_resources);
         
-        if(TemperatureSensor.Sensor_Limits() == 1)
+        if(Database.CheckAllSensorLimits("temperature") == 1)
         {
-            sprintf(msg_1, "%0.2f", TemperatureSensor.Check_Sensor());
-            msg = msg + "Temperature Bellow " + msg_1 + " ";
+            //sprintf(msg_1, "%0.2f", );
+            msg = msg + "Temperature Bellow ";
         }  
-        else if(TemperatureSensor.Sensor_Limits() == 2)
+        else if(Database.CheckAllSensorLimits("temperature") == 2)
         {
-            sprintf(msg_1, "%0.2f", TemperatureSensor.Check_Sensor());
-            msg = msg + "Temperature Above " + msg_1 + " ";
+            //sprintf(msg_1, "%0.2f", );
+            msg = msg + "Temperature Above ";
         } 
-        if(HumiditySensor.Sensor_Limits() == 1)
+        if(Database.CheckAllSensorLimits("humidity") == 1)
         {
-            sprintf(msg_1, "%0.2f", HumiditySensor.Check_Sensor());
-            msg = msg + "Humidity Bellow " + msg_1 + " ";
+            //sprintf(msg_1, "%0.2f", );
+            msg = msg + "Humidity Bellow ";
         } 
-        else if(HumiditySensor.Sensor_Limits() == 2)
+        else if(Database.CheckAllSensorLimits("humidity") == 2)
         {
-            sprintf(msg_1, "%0.2f", HumiditySensor.Check_Sensor());
-            msg = msg + "Humidity Above " + msg_1 + " ";
+            //sprintf(msg_1, "%0.2f", );
+            msg = msg + "Humidity Above ";
         } 
-        if(!SmokeSensor.Check_Sensor())
+        if(Database.GetSensorValues("smoke") == "0")
             //sprintf(msg, "Smoke Detected ");
             msg = msg + "Smoke Detected";
 
+        pthread_mutex_unlock(&sensor_resources);
         //printf("%s\n", msg);
         cout << msg << "\n";
         msg.clear();
@@ -231,15 +242,16 @@ void* CSPOT::Notification(void* threadid)
 void* CSPOT::ReadApp(void* threadid)
 {
     char msg[MAX_MSG_LEN];
+    string database_response;
     while(1)
     {
         printf("Read App Mutex\n");
 
         ReceiveServerMsg(msg);
         printf("Message: %s \n", msg);
-        
+        database_response = Database.ProcessRequest(msg);
         //printf("Database Response: %s \n",);
-        
+        strcpy(msg, database_response.c_str());
         SendServerMsg(msg);
         memset(msg,0,MAX_MSG_LEN);
     }
@@ -257,12 +269,29 @@ void* CSPOT::UpdateSystem(void* threadid)
         /*=============================================================*/
                 /* Set Sensor Numbers */
         /*_______________________________________________*/
-        TemperatureSensor.Set_Value(stof(Values[2]));
-        HumiditySensor.Set_Value(stof(Values[3]));
-        SmokeSensor.Set_Value(stof(Values[1]));
+        //TemperatureSensor.Set_Value(stof(Values[2]));
+        //HumiditySensor.Set_Value(stof(Values[3]));
+        //SmokeSensor.Set_Value(stof(Values[1]));
+
+        cout << Values[0] << " " << Values[1] << " " << Values[2] << " " << Values[3] << "\n";
+        pthread_mutex_lock(&sensor_resources);
+        Database.updateUserSensor(Values[3],"humidity");
+        Database.updateUserSensor(Values[2],"temperature");
+        Database.updateUserSensor(Values[1],"smoke");
+        Database.updateUserSensor(Values[0],"battery");
+
         /*_________________________________________________*/
-        if(TemperatureSensor.Sensor_Limits() || HumiditySensor.Sensor_Limits() || !SmokeSensor.Check_Sensor())
+
+        if(Database.CheckAllSensorLimits("temperature") || Database.CheckAllSensorLimits("humidity")
+            || (Database.GetSensorValues("smoke") == "0"))
+        {
+            printf("Notification sent\n");
             sem_post(&SNotification);
+        }
+        pthread_mutex_unlock(&sensor_resources);    
+
+        //if(TemperatureSensor.Sensor_Limits() || HumiditySensor.Sensor_Limits() || !SmokeSensor.Check_Sensor())
+        //    sem_post(&SNotification);
     }
 }
  

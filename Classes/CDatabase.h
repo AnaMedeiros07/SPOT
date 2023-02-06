@@ -24,7 +24,7 @@ class CDatabase
     //___________________________________________________
     //______________Update and Get Values in Database___________________
         int updateUserNumber(string , string );
-        int updateUserSensor(string, string);
+        int updateUserSensor(string value, string type);
         int updateLowerLimits(string, string);
         int updateUpperLimits(string, string);
         string GetNumber(string);
@@ -36,8 +36,10 @@ class CDatabase
         string quotesql(const string& );
         int checklogin(string ,string );
         string CheckLowerLimits(string );  
-        string CheckUpperLimits(string )
+        string CheckUpperLimits(string );
+        int checkIfUserExists(string name);
         string ProcessRequest(string);
+        int CheckAllSensorLimits(string name);
       
 };
 

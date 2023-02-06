@@ -142,6 +142,10 @@ int CDatabase::createDB(const char* s)
 {
 	sqlite3* DB;
 	char* messageError;
+	
+	if(!checkIfUserExists(name))
+		return 1;
+
 	string sql (
     "INSERT INTO USER (NAME, PASSWORD, NUMBER) VALUES ("
     + quotesql(name) + ","
@@ -165,7 +169,7 @@ int CDatabase::createDB(const char* s)
 {	sqlite3* DB;
 	char* messageError;
 	string sql (
-    "INSERT INTO SENSOR (TYPE, VALUE, UPPER_LIMIT,LOWER_LIMIT) VALUES ("
+    "INSERT OR IGNORE INTO SENSOR (TYPE, VALUE, UPPER_LIMIT,LOWER_LIMIT) VALUES ("
     + quotesql(type) + ","
     + quotesql(value) + ","
 	+ quotesql(upper_limit) + ","
@@ -203,6 +207,28 @@ int CDatabase::checklogin(string name,string password)
 
 	return valid;
 }
+
+int CDatabase::checkIfUserExists(string name)
+{
+	sqlite3* DB;
+	char* messageError;
+	int valid = 1;
+	string sql = " SELECT ID FROM USER WHERE NAME = " + quotesql(name) +";";
+	int exit = sqlite3_open("DATABASE.db", &DB);
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+	sqlite3_stmt *stmt;
+	exit = sqlite3_prepare_v2(DB, sql.c_str(), -1,&stmt, NULL);
+
+	while(sqlite3_step(stmt) ==SQLITE_ROW){
+		valid = 0;
+	};
+
+	sqlite3_finalize(stmt);
+
+	return valid;
+}
+
+
 int CDatabase::updateUserNumber(string name, string number)
 {
 	sqlite3* DB;
@@ -237,8 +263,7 @@ int CDatabase::updateUpperLimits(string type,string upper_limit)
 		sqlite3_free(messageError);
 		return 1;
 	}
-	else
-		cout << "Records updated Successfully!" << endl;
+
 
 	return 0;
 }
@@ -257,8 +282,6 @@ int CDatabase::updateLowerLimits(string type,string lower_limit)
 		sqlite3_free(messageError);
 		return 1;
 	}
-	else
-		cout << "Records updated Successfully!" << endl;
 
 	return 0;
 }
@@ -272,12 +295,10 @@ int CDatabase::updateUserSensor(string value,string type)
 	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here */
 	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
 	if (exit != SQLITE_OK) {
-		cerr << "Error in updateData function." << endl;
+		cerr << "Error in updateSensorData function." << endl;
 		sqlite3_free(messageError);
 		return 1;
 	}
-	else
-		cout << "Records updated Successfully!" << endl;
 
 	return 0;
 }
@@ -402,4 +423,17 @@ string CDatabase::CheckUpperLimits(string name)
 	sqlite3_finalize(stmt);
 
 	return number;
+}
+
+int CDatabase::CheckAllSensorLimits(string name)
+{
+	int ret = 0;
+
+	if(CheckLowerLimits(name).length()-1)
+		ret = 1;
+
+	if(CheckUpperLimits(name).length()-1)
+		ret = 2; 
+
+	return ret;
 }
