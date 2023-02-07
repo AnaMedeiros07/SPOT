@@ -199,9 +199,10 @@ void* CSPOT::Motion(void* threadid)
 void* CSPOT::Notification(void* threadid)
 {
     
-    char msg_1[200];
+    char msg[200];
     int flag = 0;
-    string msg;
+    string event;
+    static string last_event;
     while(1)
     {
         sem_wait(&SNotification);
@@ -211,45 +212,45 @@ void* CSPOT::Notification(void* threadid)
         
         if(Database.CheckAllSensorLimits("temperature") == 1)
         {
-            //sprintf(msg_1, "%0.2f", );
-            msg = msg + "Temperature Bellow ";
+            event = event + "Temperature Bellow ";
             flag = 1;
         }  
         else if(Database.CheckAllSensorLimits("temperature") == 2)
         {
-            //sprintf(msg_1, "%0.2f", );
-            msg = msg + "Temperature Above ";
+            event = event + "Temperature Above ";
             flag = 1;
         } 
         if(Database.CheckAllSensorLimits("humidity") == 1)
         {
-            //sprintf(msg_1, "%0.2f", );
-            msg = msg + "Humidity Bellow ";
+            event = event + "Humidity Bellow ";
             flag = 1;
         } 
         else if(Database.CheckAllSensorLimits("humidity") == 2)
         {
-            //sprintf(msg_1, "%0.2f", );
-            msg = msg + "Humidity Above ";
+            event = event + "Humidity Above ";
             flag = 1;
         } 
         if(Database.GetSensorValues("smoke") == "0")
         {
-            //sprintf(msg, "Smoke Detected ");
-            msg = msg + "Smoke Detected";
+            event = event + "Smoke Detected";
             flag = 1;
         }
         if(flag)
         {
-            msg = "ALRM " + msg;   
+            event = "ALRM " + event;   
             flag = 0;
         }
         pthread_mutex_unlock(&sensor_resources);
-        //printf("%s\n", msg);
-        cout << msg << "\n";
-        strcpy(msg_1, msg.c_str());
-        SendServerMsg(msg_1);
-        msg.clear();
+        
+        if( (event != last_event) && (!event.empty()) )
+        {
+            cout << event << "\n";
+            last_event = event;
+            strcpy(msg, event.c_str());
+            SendServerMsg(msg);
+        }
+        
+        event.clear();
     }
 
 }
@@ -259,12 +260,14 @@ void* CSPOT::ReadApp(void* threadid)
     string database_response;
     while(1)
     {
-        printf("Read App Mutex\n");
+        printf("Read App\n");
 
         ReceiveServerMsg(msg);
         printf("Message: %s \n", msg);
+        pthread_mutex_lock(&sensor_resources);
         database_response = Database.ProcessRequest(msg);
         //printf("Database Response: %s \n",);
+        pthread_mutex_unlock(&sensor_resources);
         strcpy(msg, database_response.c_str());
         SendServerMsg(msg);
         memset(msg,0,MAX_MSG_LEN);

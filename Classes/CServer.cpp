@@ -72,7 +72,36 @@ int CServer::CheckSocket(void)
 
 void CServer::ReceiveData(char* msg, int msg_length)
 {
-    valread = read( new_socket , msg, msg_length);
+    //valread = read( new_socket , msg, msg_length);
+    int flags = fcntl(server_fd, F_GETFL);
+    fcntl(server_fd, F_SETFL, flags | O_NONBLOCK);
+    fd_set read_set;
+
+    struct timeval timeout;
+
+    timeout.tv_sec = 1; // Time out after a minute
+    timeout.tv_usec = 0;
+    FD_ZERO(&read_set);
+    FD_SET(new_socket, &read_set);
+
+    int r=select(new_socket+1, &read_set, NULL, NULL, &timeout);
+    //cout<<"wait to read"<<endl;
+    if( r<0 ) {
+        // Handle the error
+        cout<<"Error!!"<<endl;
+    }
+
+    if( r==0 ) {
+        // Timeout - handle that. You could try waiting again, close the socket...
+        //cout<<"timeout!!"<<endl;
+    }
+
+    if( r>0 ) {
+        read( new_socket , msg, msg_length);
+        printf("%s\n",msg );
+    }
+    flags &= ~O_NONBLOCK;
+    fcntl(server_fd, F_SETFL, flags);
 
 }
 

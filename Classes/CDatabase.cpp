@@ -79,7 +79,7 @@ string CDatabase::ProcessRequest(string str){
 				return "F";
 	}
 	else		
-		return "E";	
+		return "";	
 }
 string CDatabase::quotesql( const string& word ) {
     return string("'") + word + string("'");
@@ -188,6 +188,7 @@ int CDatabase::createDB(const char* s)
 
 	return 0;
 }
+
 int CDatabase::checklogin(string name,string password)
 {
 	sqlite3* DB;

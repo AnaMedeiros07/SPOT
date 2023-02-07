@@ -172,14 +172,15 @@ int main(int argc, char *argv[])
             printf("On send %s \n", receive_msg);
             server.SendData(receive_msg);
         }
-        
+        server.ReceiveData(send_msg, MAX_MSG_LEN);
+        send_messagequeue(send_msg);
+        /*
         if((strstr(receive_msg, "ALRM")) != NULL);
         {
             printf("Not alarm");
-            server.ReceiveData(send_msg, MAX_MSG_LEN);
-            send_messagequeue(send_msg);
+            
         }
-
+        */
         sleep(1);
 
         //Clear msg
