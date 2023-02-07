@@ -32,7 +32,8 @@ int CSPOT::ReceiveMsg(string* Values)
     string word;
     mqd_t msgqread_id = mq_open(MSGQOBJ_NAME, O_RDWR); // open the message queue;
     if (msgqread_id == (mqd_t)-1) {
-        perror("In mq_open()");
+        printf("%i", msgqread_id);
+        perror("In Receive Msg mq_open()");
         exit(1);
     }
     int msgsz = mq_receive(msgqread_id, msgcontent, MAX_MSG_LEN, &sender);
@@ -66,7 +67,8 @@ int CSPOT::ReceiveServerMsg(char* msg)
     mq_attr msgq_attr;
     mqd_t msgqread_id = mq_open(MSGQSEND_NAME, O_RDWR); // open the message queue;
     if (msgqread_id == (mqd_t)-1) {
-        perror("In mq_open()");
+        printf("%i", msgqread_id);
+        perror("In Receive Server mq_open()");
         exit(1);
     }
     int msgsz = mq_receive(msgqread_id, msgcontent, MAX_MSG_LEN, &sender);
@@ -102,7 +104,8 @@ int CSPOT::SendServerMsg(char* msg)
     msgq_id = mq_open(MSGQRECEIVE_NAME, O_RDWR);
     if(msgq_id == (mqd_t)-1)
     {
-        perror("In mq_open()");
+        printf("%i", msgq_id);
+        perror("In Send Server mq_open()");
         exit(1);
     }
     mq_send(msgq_id, msg, strlen(msg)+1, msgprio);

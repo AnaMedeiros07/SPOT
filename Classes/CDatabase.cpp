@@ -134,7 +134,7 @@ int CDatabase::createDB(const char* s)
 	{
 		cerr << e.what();
 	}
-
+	sqlite3_close(DB);
 	return 0;
 }
 
@@ -162,7 +162,7 @@ int CDatabase::createDB(const char* s)
 	}
 	else
 		cout << "Records inserted Successfully!" << endl;
-
+	sqlite3_close(DB);
 	return 0;
 }
  int CDatabase::insertDataSensorID(string type,string value,string upper_limit,string lower_limit)
@@ -185,7 +185,7 @@ int CDatabase::createDB(const char* s)
 	}
 	else
 		cout << "Records inserted Successfully!" << endl;
-
+	sqlite3_close(DB);
 	return 0;
 }
 
@@ -205,7 +205,7 @@ int CDatabase::checklogin(string name,string password)
 	};
 
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(DB);
 	return valid;
 }
 
@@ -225,7 +225,7 @@ int CDatabase::checkIfUserExists(string name)
 	};
 
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(DB);
 	return valid;
 }
 
@@ -246,7 +246,7 @@ int CDatabase::updateUserNumber(string name, string number)
 	}
 	else
 		cout << "Records updated Successfully!" << endl;
-
+	sqlite3_close(DB);
 	return 0;
 }
 
@@ -265,7 +265,7 @@ int CDatabase::updateUpperLimits(string type,string upper_limit)
 		return 1;
 	}
 
-
+	sqlite3_close(DB);
 	return 0;
 }
 int CDatabase::updateLowerLimits(string type,string lower_limit)
@@ -283,7 +283,7 @@ int CDatabase::updateLowerLimits(string type,string lower_limit)
 		sqlite3_free(messageError);
 		return 1;
 	}
-
+	sqlite3_close(DB);
 	return 0;
 }
 int CDatabase::updateUserSensor(string value,string type)
@@ -293,14 +293,16 @@ int CDatabase::updateUserSensor(string value,string type)
 	string sql("UPDATE SENSOR SET VALUE = " + quotesql(value) + " WHERE TYPE ="+ quotesql(type)+";");
 
 	int exit = sqlite3_open("DATABASE.db", &DB);
+	cout << "\n Open: "<< exit;
 	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here */
 	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+	cout << "\n Query: "<< exit << "\n";
 	if (exit != SQLITE_OK) {
-		cerr << "Error in updateSensorData function." << endl;
+		cerr << "Error in updateSensorData function." << messageError << endl;
 		sqlite3_free(messageError);
 		return 1;
 	}
-
+	sqlite3_close(DB);
 	return 0;
 }
 
@@ -321,7 +323,7 @@ string CDatabase::GetNumber(string name)
 
 	sqlite3_finalize(stmt);
 
-	
+	sqlite3_close(DB);
 	return number;
 }
 
@@ -342,7 +344,7 @@ string CDatabase::GetSensorValues(string name)
 
 	sqlite3_finalize(stmt);
 
-	
+	sqlite3_close(DB);
 	return number;
 }
 
@@ -363,7 +365,7 @@ string CDatabase::GetUppperSensorLimits(string name)
 
 	sqlite3_finalize(stmt);
 
-	
+	sqlite3_close(DB);
 	return number;
 }
 
@@ -384,7 +386,7 @@ string CDatabase::GetLowerSensorLimits(string name)
 
 	sqlite3_finalize(stmt);
 
-	
+	sqlite3_close(DB);
 	return number;
 }
 string CDatabase::CheckLowerLimits(string name)
@@ -403,7 +405,7 @@ string CDatabase::CheckLowerLimits(string name)
 	};
 
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(DB);
 	return number;
 }
 string CDatabase::CheckUpperLimits(string name)
@@ -422,7 +424,7 @@ string CDatabase::CheckUpperLimits(string name)
 	};
 
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(DB);
 	return number;
 }
 
