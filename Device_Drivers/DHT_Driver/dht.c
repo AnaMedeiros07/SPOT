@@ -40,10 +40,10 @@ static struct file_operations fops =
 
 typedef struct DHT{
     unsigned char data[5];
-    char temperature_int;
-    char temperature_dec;
     char humidity_int;
     char humidity_dec;
+    char temperature_int;
+    char temperature_dec;
 } dht_t;
 
 static int dht_open(struct inode *inode, struct file *file)
@@ -111,10 +111,11 @@ static ssize_t dht_read(struct file *filp, char __user *buf, size_t len, loff_t 
       printk( "Humidity = %d.%d Temperature = %d.%d C\n",
       sensor.data[0], sensor.data[1], sensor.data[2], sensor.data[3]);
       
-      sensor.temperature_int = sensor.data[0];
-      sensor.temperature_dec = sensor.data[1];
-      sensor.humidity_int = sensor.data[2];
-      sensor.humidity_dec = sensor.data[3];
+      sensor.humidity_int = sensor.data[0];
+      sensor.humidity_dec = sensor.data[1];
+      sensor.temperature_int = sensor.data[2];
+      sensor.temperature_dec = sensor.data[3];
+      
   } else  
   {
       pr_info("Checksum failed\n");

@@ -5,10 +5,11 @@
 
 typedef struct DHT{
     unsigned char data[5];
-    char temperature_int = 0;
-    char temperature_dec = 0;
     char humidity_int = 0;
     char humidity_dec = 0; 
+    char temperature_int = 0;
+    char temperature_dec = 0;
+
 } dht_t;
 
 int main(void)
@@ -32,6 +33,12 @@ int main(void)
     printf("Final Data %d.%d %d.%d\n", sensor.temperature_int, sensor.temperature_dec, sensor.humidity_int, sensor.humidity_dec);
     
     float temperature = sensor.temperature_int + sensor.temperature_dec/10.0;
+
+    float humidity = sensor.humidity_int + sensor.humidity_dec/10.0;
     
+    printf("Temperature: %0.2f\n", temperature);
+
+    printf("Humidity %0.2f\n", humidity);
+
     return 0;  
 }

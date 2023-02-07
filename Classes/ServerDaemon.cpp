@@ -174,13 +174,6 @@ int main(int argc, char *argv[])
         }
         server.ReceiveData(send_msg, MAX_MSG_LEN);
         send_messagequeue(send_msg);
-        /*
-        if((strstr(receive_msg, "ALRM")) != NULL);
-        {
-            printf("Not alarm");
-            
-        }
-        */
         sleep(1);
 
         //Clear msg
@@ -189,5 +182,6 @@ int main(int argc, char *argv[])
         //sleep(1);
     }
     server.EndConnection();
+    printf("Ended Server");
     exit(EXIT_SUCCESS);
 }

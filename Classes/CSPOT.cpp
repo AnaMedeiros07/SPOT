@@ -192,10 +192,12 @@ bool CSPOT::ConfigureDatabase(void)
 
 void* CSPOT::Motion(void* threadid)
 {
+    char msg[20] = "Motion Detected";
     while(1)
     {
         sem_wait(&SMotionSensor);
         cout << " Motion Detected!!"<<endl;
+        SendServerMsg(msg);
     }
 }
 
@@ -295,8 +297,8 @@ void* CSPOT::UpdateSystem(void* threadid)
 
         cout << Values[0] << " " << Values[1] << " " << Values[2] << " " << Values[3] << "\n";
         pthread_mutex_lock(&sensor_resources);
-        Database.updateUserSensor(Values[3],"humidity");
-        Database.updateUserSensor(Values[2],"temperature");
+        Database.updateUserSensor(Values[3],"temperature");
+        Database.updateUserSensor(Values[2],"humidity");
         Database.updateUserSensor(Values[1],"smoke");
         Database.updateUserSensor(Values[0],"battery");
 
