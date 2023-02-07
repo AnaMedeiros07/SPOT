@@ -200,6 +200,7 @@ void* CSPOT::Notification(void* threadid)
 {
     
     char msg_1[200];
+    int flag = 0;
     string msg;
     while(1)
     {
@@ -212,29 +213,42 @@ void* CSPOT::Notification(void* threadid)
         {
             //sprintf(msg_1, "%0.2f", );
             msg = msg + "Temperature Bellow ";
+            flag = 1;
         }  
         else if(Database.CheckAllSensorLimits("temperature") == 2)
         {
             //sprintf(msg_1, "%0.2f", );
             msg = msg + "Temperature Above ";
+            flag = 1;
         } 
         if(Database.CheckAllSensorLimits("humidity") == 1)
         {
             //sprintf(msg_1, "%0.2f", );
             msg = msg + "Humidity Bellow ";
+            flag = 1;
         } 
         else if(Database.CheckAllSensorLimits("humidity") == 2)
         {
             //sprintf(msg_1, "%0.2f", );
             msg = msg + "Humidity Above ";
+            flag = 1;
         } 
         if(Database.GetSensorValues("smoke") == "0")
+        {
             //sprintf(msg, "Smoke Detected ");
             msg = msg + "Smoke Detected";
-
+            flag = 1;
+        }
+        if(flag)
+        {
+            msg = "ALRM " + msg;   
+            flag = 0;
+        }
         pthread_mutex_unlock(&sensor_resources);
         //printf("%s\n", msg);
         cout << msg << "\n";
+        strcpy(msg_1, msg.c_str());
+        SendServerMsg(msg_1);
         msg.clear();
     }
 

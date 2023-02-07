@@ -160,30 +160,33 @@ int main(int argc, char *argv[])
     char receive_msg[MAX_MSG_LEN] = {0};
 
     create_message_queue();
-
+    server.ConnectServer();
     while (1)
     {
         //Connect to server 
-        server.ConnectServer();
-        //Receive and send data to main process
-        server.ReceiveData(send_msg, MAX_MSG_LEN);
-        send_messagequeue(send_msg);
         
-        sleep(1);
-
+        //Receive and send data to main process
         if(CheckSendqueue())
         {
             receive_messagequeue(receive_msg);
             printf("On send %s \n", receive_msg);
             server.SendData(receive_msg);
-            memset(receive_msg,0,MAX_MSG_LEN);
         }
+        
+        if((strstr(receive_msg, "ALRM")) != NULL);
+        {
+            printf("Not alarm");
+            server.ReceiveData(send_msg, MAX_MSG_LEN);
+            send_messagequeue(send_msg);
+        }
+
+        sleep(1);
 
         //Clear msg
         memset(send_msg,0,MAX_MSG_LEN);
-        server.EndConnection();
-
+        memset(receive_msg,0,MAX_MSG_LEN);
         //sleep(1);
     }
+    server.EndConnection();
     exit(EXIT_SUCCESS);
 }

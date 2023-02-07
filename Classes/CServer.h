@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <bits/stdc++.h>
-
+#include <fcntl.h>
 
 #include "sqlite3.h"
 

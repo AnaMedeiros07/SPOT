@@ -17,12 +17,16 @@ CServer::~CServer(void){
 
 bool CServer::Create_Socket(void)
 {
+    const int enable = 1;
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         perror("In socket");
         exit(EXIT_FAILURE);
     }
-	return true;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+            perror("setsockopt(SO_REUSEADDR) failed");
+	
+    return true;
 }
 void CServer::Identify_socket()
 {
@@ -58,6 +62,7 @@ int CServer::ConnectServer(void)
 void CServer::SendData(char* message)
 {
 	send(new_socket, message, strlen(message),0);
+    //write(new_socket, message, strlen(message));
 }
 
 int CServer::CheckSocket(void)
