@@ -1,3 +1,6 @@
+#include <sys/syslog.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,7 +14,7 @@
 
 #include "ServerMSGQ.h"
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 256
 #define PORT 8080
 
 int main()
@@ -23,6 +26,43 @@ int main()
     std::vector<int> client_sockets;
     int j = 10;
     int bytes_sent, total_bytes_sent = 0;
+    pid_t pid, sid;
+    int len, fd;
+
+    //Message Queues
+    char send_msg[MAX_MSG_LEN] = {0};
+    char receive_msg[MAX_MSG_LEN] = {0};
+
+    openlog("SPOT Daemon Test", LOG_PID, LOG_DAEMON);
+    pid = fork(); // create a new process
+
+    if (pid < 0)
+    { // on error exit
+        syslog(LOG_ERR, "%s\n", "fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid > 0)
+    {
+        printf("Server Daemon PID: %d\n", pid);
+        exit(EXIT_SUCCESS); // parent process (exit)
+    }
+    sid = setsid(); // create a new session
+
+    if (sid < 0)
+    { // on error exit
+        syslog(LOG_ERR, "%s\n", "setsid");
+        exit(EXIT_FAILURE);
+    }
+
+    // make '/' the root directory
+    if (chdir("/") < 0)
+    { // on error exit
+        syslog(LOG_ERR, "%s\n", "chdir");
+        exit(EXIT_FAILURE);
+    }
+
+    create_message_queue();
 
     // Create a server socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -77,21 +117,33 @@ int main()
 
         // Check all client sockets for incoming data
         for (int i = 0; i < client_sockets.size(); i++) {
-            int bytes_received = recv(client_sockets[i], buffer, BUFFER_SIZE, 0);
+            int bytes_received = recv(client_sockets[i], buffer, BUFFER_SIZE, MSG_NOSIGNAL);
+            
+            // If there is information received send through messsage queue to main process
+            if(bytes_received)
+            {
+                //std::cout << "Message Received " << client_sockets[i] << std::endl;
+                send_messagequeue(buffer);
+                memset(buffer,0,BUFFER_SIZE);
+            }
         }
 
-        // If there is content to send
-        if(j)
+        // If there is content in msg queue to send
+        if(CheckNumMsg())
         {
+            // Put msg queue content in buffer
+            receive_messagequeue(buffer);
+
             // Check all client sockets and send data
             for (int i = 0; i < client_sockets.size(); i++) {
-                sprintf(buffer,"Buffer: %i\n", j);
+                //sprintf(buffer,"Buffer: %i\n", j);
                 bytes_sent = send(client_sockets[i], buffer, BUFFER_SIZE, MSG_NOSIGNAL);     
                 if(bytes_sent == -1)
                 {
                     close(client_sockets[i]);
                     client_sockets.erase(client_sockets.begin() + i);
                     std::cout << "Client disconnected" << std::endl;
+                    std::cout << CheckNumMsg() << std::endl;
                 }
                 total_bytes_sent =+ bytes_sent;
             }
@@ -99,15 +151,13 @@ int main()
             {
                 j--;
                 total_bytes_sent = 0;
-                sleep(1);
+                memset(buffer,0,BUFFER_SIZE);
             }
         }
-        std::cout << client_sockets.size() << std::endl;
-        sleep(1);
-        //reload send buffer
-        if(!j)
-            j = 10;
-    }
 
+        sleep(1);
+
+    }
+    std::cout << "Server is down!" << std::endl;
     return 0;
 }

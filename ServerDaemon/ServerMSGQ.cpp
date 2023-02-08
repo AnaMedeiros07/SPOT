@@ -44,6 +44,7 @@ int create_message_queue(void)
     if(msgq_receive_id == (mqd_t)-1)
     {
         perror("In mq_open receive()");
+        mq_unlink(MSGQRECEIVE_NAME);
         return 1;
     }
     if(msgq_send_id == (mqd_t)-1) 
@@ -82,7 +83,7 @@ int CheckSendqueue(void)
     mq_attr msgq_attr;
     mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
     mq_getattr(msgqread_id, &msgq_attr);
-    printf("Check: %i \n", msgq_attr.mq_curmsgs);
+    //printf("Check: %i \n", msgq_attr.mq_curmsgs);
     if(msgq_attr.mq_curmsgs == 0)
     { 
         mq_close(msgqread_id);
@@ -90,4 +91,24 @@ int CheckSendqueue(void)
     }
     mq_close(msgqread_id);
     return 1;
+}
+
+int CheckNumMsg(void)
+{
+    struct mq_attr attr;
+
+    mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
+    if (msgqread_id == (mqd_t) -1) {
+        perror("mq_open");
+        return -1;
+    }
+
+    if (mq_getattr(msgqread_id, &attr) == -1) {
+        perror("mq_getattr");
+        return -1;
+    }
+
+    //printf("There are %ld messages in the queue\n", attr.mq_curmsgs);
+
+    return attr.mq_curmsgs;
 }

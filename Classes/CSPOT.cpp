@@ -77,7 +77,7 @@ int CSPOT::ReceiveServerMsg(char* msg)
         exit(1);    
     }
     strcpy(msg, msgcontent);
-    printf("In Receive: %s \n", msgcontent);
+    //printf("In Receive: %s \n", msgcontent);
     mq_close(msgqread_id);
     return 0;
 }
@@ -265,13 +265,12 @@ void* CSPOT::ReadApp(void* threadid)
     string database_response;
     while(1)
     {
-        printf("Read App\n");
+        //printf("Read App\n");
 
         ReceiveServerMsg(msg);
-        printf("Message: %s \n", msg);
+        //printf("Message: %s \n", msg);
         pthread_mutex_lock(&sensor_resources);
         database_response = Database.ProcessRequest(msg);
-        //printf("Database Response: %s \n",);
         pthread_mutex_unlock(&sensor_resources);
         strcpy(msg, database_response.c_str());
         SendServerMsg(msg);
@@ -285,7 +284,7 @@ void* CSPOT::UpdateSystem(void* threadid)
     string Values[4];
     while(1)
     {
-        cout << " Thread Update System !"<<endl;
+        //cout << " Thread Update System !"<<endl;
         /*============= Read From Message Queue ==================  */
         ReceiveMsg(Values);
         /*=============================================================*/
@@ -295,7 +294,7 @@ void* CSPOT::UpdateSystem(void* threadid)
         //HumiditySensor.Set_Value(stof(Values[3]));
         //SmokeSensor.Set_Value(stof(Values[1]));
 
-        cout << Values[0] << " " << Values[1] << " " << Values[2] << " " << Values[3] << "\n";
+        //cout << Values[0] << " " << Values[1] << " " << Values[2] << " " << Values[3] << "\n";
         pthread_mutex_lock(&sensor_resources);
         Database.updateUserSensor(Values[3],"temperature");
         Database.updateUserSensor(Values[2],"humidity");
@@ -307,7 +306,7 @@ void* CSPOT::UpdateSystem(void* threadid)
         if(Database.CheckAllSensorLimits("temperature") || Database.CheckAllSensorLimits("humidity")
             || (Database.GetSensorValues("smoke") == "0"))
         {
-            printf("Notification sent\n");
+            //printf("Notification sent\n");
             sem_post(&SNotification);
         }
         pthread_mutex_unlock(&sensor_resources);    

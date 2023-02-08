@@ -19,4 +19,6 @@ int create_message_queue(void);
 
 int CheckSendqueue(void);
 
+int CheckNumMsg(void);
+
 #endif
