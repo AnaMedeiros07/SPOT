@@ -9,7 +9,7 @@ CSensor CSPOT::TemperatureSensor;
 CSensor CSPOT::HumiditySensor;
 CSensor CSPOT::SmokeSensor;
 
-CDatabase CSPOT::Database;
+CDatabase CSPOT::Database(DATABASE);
 
 CSPOT::~CSPOT(){
     sem_destroy(&SMotionSensor);
@@ -179,7 +179,7 @@ bool CSPOT::ConfigureServer(void)
 bool CSPOT::ConfigureDatabase(void)
 {
     /*Create Database and the Tables*/
-    Database.createDB(DATABASE);
+    //Database.createDB(DATABASE);
     Database.createTable(DATABASE);
 
     Database.insertDataSensorID("temperature","0","30.0","20.0");

@@ -8,6 +8,7 @@ CDatabase::~CDatabase()
 {
 	sqlite3_close(DB);
 }
+
 string CDatabase::ProcessRequest(string str){
 	istringstream ss(str);
     string word; // for storing each word
