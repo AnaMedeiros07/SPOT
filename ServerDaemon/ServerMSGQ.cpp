@@ -107,7 +107,27 @@ int CheckNumMsg(void)
         perror("mq_getattr");
         return -1;
     }
+    mq_close(msgqread_id);
+    //printf("There are %ld messages in the queue\n", attr.mq_curmsgs);
 
+    return attr.mq_curmsgs;
+}
+
+int CheckNumMsg2(void)
+{
+    struct mq_attr attr;
+
+    mqd_t msgqread_id = mq_open(MSGQSEND_NAME, O_RDWR); // open the message queue;
+    if (msgqread_id == (mqd_t) -1) {
+        perror("mq_open");
+        return -1;
+    }
+
+    if (mq_getattr(msgqread_id, &attr) == -1) {
+        perror("mq_getattr");
+        return -1;
+    }
+    mq_close(msgqread_id);
     //printf("There are %ld messages in the queue\n", attr.mq_curmsgs);
 
     return attr.mq_curmsgs;

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "ServerMSGQ.h"
 
@@ -24,7 +25,6 @@ int main()
     socklen_t client_len = sizeof(client_address);
     char buffer[BUFFER_SIZE];
     std::vector<int> client_sockets;
-    int j = 10;
     int bytes_sent, total_bytes_sent = 0;
     pid_t pid, sid;
     int len, fd;
@@ -111,8 +111,10 @@ int main()
             }
 
             // Add the client socket to the list of client sockets
+
             client_sockets.push_back(client_socket);
             std::cout << "Accepted incoming connection from " << inet_ntoa(client_address.sin_addr) << std::endl;
+            std::cout << "Num of clients: " << client_sockets.size() << std::endl;
         }
 
         // Check all client sockets for incoming data
@@ -123,9 +125,25 @@ int main()
             if(bytes_received)
             {
                 //std::cout << "Message Received " << client_sockets[i] << std::endl;
+                //std::cout << bytes_received << buffer << std::endl;
                 send_messagequeue(buffer);
                 memset(buffer,0,BUFFER_SIZE);
+                //std::cout << "On receive: " << CheckNumMsg2() << std::endl;
             }
+        }
+
+        memset(buffer,0,BUFFER_SIZE);
+        for (int i = 0; i < client_sockets.size(); i++) {
+            //sprintf(buffer,"Buffer: %i\n", j);
+            bytes_sent = send(client_sockets[i], buffer, BUFFER_SIZE, MSG_NOSIGNAL);     
+            if(bytes_sent == -1)
+            {
+                close(client_sockets[i]);
+                client_sockets.erase(client_sockets.begin() + i);
+                std::cout << "Client disconnected" << std::endl;
+                //std::cout << "On send " << CheckNumMsg() << std::endl;
+            }
+            total_bytes_sent =+ bytes_sent;
         }
 
         // If there is content in msg queue to send
@@ -143,19 +161,18 @@ int main()
                     close(client_sockets[i]);
                     client_sockets.erase(client_sockets.begin() + i);
                     std::cout << "Client disconnected" << std::endl;
-                    std::cout << CheckNumMsg() << std::endl;
+                    //std::cout << "On send " << CheckNumMsg() << std::endl;
                 }
                 total_bytes_sent =+ bytes_sent;
             }
             if(total_bytes_sent)
             {
-                j--;
                 total_bytes_sent = 0;
                 memset(buffer,0,BUFFER_SIZE);
             }
         }
-
-        sleep(1);
+        //std::cout << "On Final " << CheckNumMsg() << std::endl;
+        usleep(50000);
 
     }
     std::cout << "Server is down!" << std::endl;

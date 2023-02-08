@@ -76,7 +76,7 @@ string CDatabase::ProcessRequest(string str){
 		lower_limitT = CDatabase::GetLowerSensorLimits("temperature");
 		lower_limitH = CDatabase::GetLowerSensorLimits("humidity");
 
-		result = upper_limitT + " " + upper_limitH + " " + lower_limitT + " " + lower_limitH;
+		result = "Limits " + upper_limitT + " " + upper_limitH + " " + lower_limitT + " " + lower_limitH;
 		return result;
 	}
 	else if(argv[0] == "NLimits") // Update Limits
@@ -89,7 +89,7 @@ string CDatabase::ProcessRequest(string str){
 				return "NLimitsF";
 	}
 	else		
-		return "E";	
+		return "";	
 }
 string CDatabase::quotesql( const string& word ) {
     return string("'") + word + string("'");

@@ -21,4 +21,5 @@ int CheckSendqueue(void);
 
 int CheckNumMsg(void);
 
+int CheckNumMsg2(void);
 #endif

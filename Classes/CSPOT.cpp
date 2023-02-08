@@ -192,7 +192,7 @@ bool CSPOT::ConfigureDatabase(void)
 
 void* CSPOT::Motion(void* threadid)
 {
-    char msg[20] = "Motion Detected";
+    char msg[30] = "ALARM Motion Detected";
     while(1)
     {
         sem_wait(&SMotionSensor);
@@ -211,7 +211,7 @@ void* CSPOT::Notification(void* threadid)
     while(1)
     {
         sem_wait(&SNotification);
-        printf("Notification \n");
+        //printf("Notification \n");
 
         pthread_mutex_lock(&sensor_resources);
         
@@ -242,7 +242,7 @@ void* CSPOT::Notification(void* threadid)
         }
         if(flag)
         {
-            event = "ALRM " + event;   
+            event = "ALARM " + event;   
             flag = 0;
         }
         pthread_mutex_unlock(&sensor_resources);
