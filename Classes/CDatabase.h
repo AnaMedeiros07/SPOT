@@ -15,17 +15,18 @@ class CDatabase
         sqlite3* DB;
         sqlite3_stmt *stmt;
 	    char* messageError;
+
     public:
     //____________create tables_________________________
         CDatabase(const char*);
         ~CDatabase();
         int createTable(const char* );
-    //______________________________________________
+    //_______________________________________________________
     //_______________Insert in the database__________________
         int insertDataSensorID(string ,string ,string ,string);
         int insertDataUserID(string ,string ,string );
-    //___________________________________________________
-    //______________Update and Get Values in Database___________________
+    //_______________________________________________________
+    //______________Update and Get Values in Database________
         int updateUserNumber(string , string );
         int updateUserSensor(string, string);
         int updateLowerLimits(string, string);
@@ -34,13 +35,13 @@ class CDatabase
         string GetSensorValues(string);
         string GetUppperSensorLimits(string);
         string GetLowerSensorLimits(string);
-
-    //______________________Auxiliar Function_________________________________
+    //_______________________________________________________
+    //______________________Auxiliar Function________________
         string quotesql(const string& );
         int checklogin(string ,string );
         string CheckLowerLimits(string );  
         string CheckUpperLimits(string );
-        int CheckAllSensorLimits(string )
+        int CheckAllSensorLimits(string );
         string ProcessRequest(string);
       
 };
