@@ -1,1 +1,0 @@
-cmd_/home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/Uart_Driver/softuart.mod := { echo  /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/Uart_Driver/softuart.o;  echo; } > /home/francisco/Desktop/Spot_Project/SPOT/Device_Drivers/Uart_Driver/softuart.mod
