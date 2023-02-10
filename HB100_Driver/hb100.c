@@ -50,23 +50,6 @@ struct file_operations hb100_fops = {
 
 MODULE_LICENSE("GPL v2");
 
-int hb100_major = 60;
-
-bool state = 0;
-
-static irqreturn_t gpio_irq_handler(int irq,void *dev_id) 
-{
-  static unsigned long flags = 0;
-
-  local_irq_save(flags);
-  pr_info("Interrupt Occurred");
-  
-  count++;
-
-  local_irq_restore(flags);
-  return IRQ_HANDLED;
-}
-
 int hb100_open(struct inode *inode, struct file *filp)
 {
 	printk("Device Driver Opened");
@@ -93,20 +76,22 @@ long hb100_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-/*
-static enum hrtimer_restart RestartTimeout(struct hrtimer * unused)
+static irqreturn_t gpio_irq_handler(int irq,void *dev_id) 
 {
-  hrtimer_forward_now(&hrtimer_timeout, ktime_set(0,TIMEOUT * 1000000));
+  static unsigned long flags = 0;
 
-  return HRTIMER_RESTART;
+  local_irq_save(flags);
+  pr_info("Interrupt Occurred");
+  
+  count++;
+
+  local_irq_restore(flags);
+  return IRQ_HANDLED;
 }
-*/
 
 void timer_callback(struct timer_list * data)
 {
     struct kernel_siginfo info;
-    /* do your timer stuff here */
-    printk("1 Seconds");
 
     if(count > MIN_COUNT)
     {
@@ -120,13 +105,11 @@ void timer_callback(struct timer_list * data)
             count = 0;
             if(send_sig_info(SIGETX, &info, task) < 0)
                 printk(KERN_INFO "Unable to send signal\n");
-    }
+      }
 
     }
-    /*
-       Re-enable timer. Because this function will be called only first time. 
-       If we re-enable this will work like periodic timer. 
-    */
+    
+    //Re-enable timer. 
     mod_timer(&timeout_timer, jiffies + msecs_to_jiffies(TIMEOUT));
 }
 
