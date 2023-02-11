@@ -13,6 +13,7 @@ CMq2::~CMq2(void)
     close(mq2_file);
 }
 
+//Read Sensor and update variables if read was successful
 int CMq2::ReadSensor(void)
 {
     int value = 0;

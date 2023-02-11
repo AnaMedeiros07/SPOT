@@ -83,6 +83,7 @@ static irqreturn_t gpio_irq_handler(int irq,void *dev_id)
   local_irq_save(flags);
   pr_info("Interrupt Occurred");
   
+  //Increase interrupt counter
   count++;
 
   local_irq_restore(flags);
@@ -93,6 +94,7 @@ void timer_callback(struct timer_list * data)
 {
     struct kernel_siginfo info;
 
+    //Check if there was the minimum number of interrupt in the time interval of timeout ms
     if(count > MIN_COUNT)
     {
       memset(&info, 0, sizeof(struct kernel_siginfo));
@@ -117,25 +119,28 @@ void timer_callback(struct timer_list * data)
 
 static int __init ModuleInit(void)
 {
-  /*Allocating Major number*/
+  //Allocating Major number
   if((alloc_chrdev_region(&dev, 0, 1, "hb100_Dev")) <0){
     pr_err("Cannot allocate major number\n");
     goto r_unreg;
   }
   pr_info("Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
-  /*Creating cdev structure*/
+
+  //Creating cdev structure
   cdev_init(&hb100_cdev,&hb100_fops);
-  /*Adding character device to the system*/
+  
+  //Adding character device to the system
   if((cdev_add(&hb100_cdev,dev,1)) < 0){
     pr_err("Cannot add the device to the system\n");
     goto r_del;
   }
-  /*Creating struct class*/
+  
+  //Creating struct class
   if(IS_ERR(dev_class = class_create(THIS_MODULE,"hb100_class"))){
     pr_err("Cannot create the struct class\n");
     goto r_class;
   }
-  /*Creating device*/
+  //Creating device
   if(IS_ERR(device_create(dev_class,NULL,dev,NULL,"hb100_device"))){
     pr_err( "Cannot create the Device \n");
     goto r_device;
@@ -164,7 +169,7 @@ static int __init ModuleInit(void)
   if (request_irq(GPIO_irqNumber,             //IRQ number
                   (void *)gpio_irq_handler,   //IRQ handler
                   IRQF_TRIGGER_RISING,        //Handler will be called in raising edge
-                  "hb100_device",               //used to identify the device name using this IRQ
+                  "hb100_device",             //used to identify the device name using this IRQ
                   NULL)) {                    //device id for shared IRQ
     pr_err("my_device: cannot register IRQ ");
     goto r_gpio_in;

@@ -1,5 +1,6 @@
 #include "ServerMSGQ.h"
 
+//Send msg to the main process
 void send_messagequeue(char* msg)
 {
     mqd_t msgq_id;
@@ -14,6 +15,7 @@ void send_messagequeue(char* msg)
     mq_close(msgq_id);
 }
 
+//Receives msg from the main process
 void receive_messagequeue(char* msg)
 {
     char msgcontent[MAX_MSG_LEN];
@@ -33,6 +35,7 @@ void receive_messagequeue(char* msg)
     mq_close(msgqread_id);
 }
 
+//Initialize both message queues
 int create_message_queue(void)
 {
     mqd_t msgq_send_id, msgq_receive_id;
@@ -78,44 +81,12 @@ int create_message_queue(void)
     return 0;
 }
 
-int CheckSendqueue(void)
-{
-    mq_attr msgq_attr;
-    mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
-    mq_getattr(msgqread_id, &msgq_attr);
-    if(msgq_attr.mq_curmsgs == 0)
-    { 
-        mq_close(msgqread_id);
-        return 0;
-    }
-    mq_close(msgqread_id);
-    return 1;
-}
-
+//Returns the number of messages in the msg queue
 int CheckNumMsg(void)
 {
     struct mq_attr attr;
 
     mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
-    if (msgqread_id == (mqd_t) -1) {
-        perror("mq_open");
-        return -1;
-    }
-
-    if (mq_getattr(msgqread_id, &attr) == -1) {
-        perror("mq_getattr");
-        return -1;
-    }
-    mq_close(msgqread_id);
-
-    return attr.mq_curmsgs;
-}
-
-int CheckNumMsg2(void)
-{
-    struct mq_attr attr;
-
-    mqd_t msgqread_id = mq_open(MSGQSEND_NAME, O_RDWR); // open the message queue;
     if (msgqread_id == (mqd_t) -1) {
         perror("mq_open");
         return -1;

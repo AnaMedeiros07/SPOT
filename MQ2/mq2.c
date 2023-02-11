@@ -70,29 +70,29 @@ static ssize_t mq2_write(struct file *filp, const char __user *buf, size_t len, 
 
 static int __init mq2_driver_init(void)
 {
-  /*Allocating Major number*/
+  //Allocating Major number
   if((alloc_chrdev_region(&dev, 0, 1, "mq2_Dev")) <0){
     pr_err("MQ2: Cannot allocate major number\n");
     goto r_unreg;
   }
   pr_info("MQ2: Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
  
-  /*Creating cdev structure*/
+  //Creating cdev structure
   cdev_init(&mq2_cdev,&fops);
  
-  /*Adding character device to the system*/
+  //Adding character device to the system
   if((cdev_add(&mq2_cdev,dev,1)) < 0){
     pr_err("MQ2: Cannot add the device to the system\n");
     goto r_del;
   }
  
-  /*Creating struct class*/
+  //Creating struct class
   if(IS_ERR(dev_class = class_create(THIS_MODULE,"mq2_class"))){
     pr_err("MQ2: Cannot create the struct class\n");
     goto r_class;
   }
  
-  /*Creating device*/
+  //Creating device
   if(IS_ERR(device_create(dev_class,NULL,dev,NULL,"mq2_device"))){
     pr_err( "MQ2: Cannot create the Device \n");
     goto r_device;

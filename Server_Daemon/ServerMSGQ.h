@@ -17,9 +17,5 @@ void receive_messagequeue(char* msg);
 
 int create_message_queue(void);
 
-int CheckSendqueue(void);
-
 int CheckNumMsg(void);
-
-int CheckNumMsg2(void);
 #endif

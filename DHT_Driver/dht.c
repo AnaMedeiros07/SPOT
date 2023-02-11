@@ -58,8 +58,6 @@ static int dht_release(struct inode *inode, struct file *file)
   return 0;
 }
 
-
-
 static ssize_t dht_read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
   bool laststate = 1;
@@ -69,15 +67,17 @@ static ssize_t dht_read(struct file *filp, char __user *buf, size_t len, loff_t 
 
   dht_t sensor;
 
-  //uint8_t ret = sizeof(sensor);
-
   pr_info("DHT: Read Operation\n");
+
+  //Wake-up signal
 
   gpio_direction_output(GPIO_4,0);
   mdelay(20);
   gpio_direction_output(GPIO_4,1);
   udelay(30);
   gpio_direction_input(GPIO_4);
+
+  //Read incoming data
 
   for ( i = 0; i < MAXTIMINGS; i++ )
       {
@@ -105,6 +105,8 @@ static ssize_t dht_read(struct file *filp, char __user *buf, size_t len, loff_t 
           }
       }
  
+  //Check data integrity and if it is good send to user
+
 	if ( (j >= 40) && (sensor.data[4] == ( (sensor.data[0] + sensor.data[1] + sensor.data[2] + sensor.data[3]) ) ) )
   {
       f = sensor.data[2] * 9. / 5. + 32;
@@ -145,22 +147,22 @@ static int __init dht_driver_init(void)
   }
   pr_info("DHT: Major = %d Minor = %d \n",MAJOR(dev), MINOR(dev));
  
-  /*Creating cdev structure*/
+  //Creating cdev structure
   cdev_init(&dht_cdev,&fops);
  
-  /*Adding character device to the system*/
+  //Adding character device to the system
   if((cdev_add(&dht_cdev,dev,1)) < 0){
     pr_err("DHT: Cannot add the device to the system\n");
     goto r_del;
   }
  
-  /*Creating struct class*/
+  //Creating struct class
   if(IS_ERR(dev_class = class_create(THIS_MODULE,"dht_class"))){
     pr_err("DHT: Cannot create the struct class\n");
     goto r_class;
   }
  
-  /*Creating device*/
+  //Creating device
   if(IS_ERR(device_create(dev_class,NULL,dev,NULL,"dht_device"))){
     pr_err( "DHT: Cannot create the Device \n");
     goto r_device;

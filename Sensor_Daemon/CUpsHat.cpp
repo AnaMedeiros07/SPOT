@@ -54,13 +54,14 @@ __s32 CUpsHat::write_i2c_addr(__u8 addr, __u16 word)
     return 0;
 }
 
-
+//Swap lower and higher bytes
 __u16 CUpsHat::swapBytes(__u16 word)
 {
     word = (word & 0x00FF)<<8 | (word & 0xFF00)>>8;
     return word;
 }
 
+//Read Sensor and update variables if read was successful
 int CUpsHat::updateValues(void)
 {
     __u16 volt = read_i2c_addr(BUS_VOLTAGE);

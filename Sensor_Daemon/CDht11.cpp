@@ -13,6 +13,7 @@ CDht11::~CDht11()
     close(dht_file);
 }
 
+//Read Sensor and update variables if read was successful
 int CDht11::ReadSensor(void)
 {
     if(!read(dht_file, &sensor, sizeof(sensor)))
