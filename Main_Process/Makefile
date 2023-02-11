@@ -1,7 +1,5 @@
 CXX = aarch64-buildroot-linux-uclibc-g++
 
-KDIR := home/francisco/buildroot/buildroot-2022.08/output/host/bin/
-
 LIBS = home/francisco/buildroot/buildroot-2022.08/output/host/aarch64-buildroot-linux-uclibc/sysroot/usr/lib
 
 LDLIBS = -lsqlite3 -lpthread
