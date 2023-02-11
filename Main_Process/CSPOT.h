@@ -60,7 +60,6 @@ class CSPOT{
         bool CreateThreads(void);
         void InitSignal(void);
         void static sig_event_handler(int, siginfo_t*, void*);
-        bool ConfigureServer(void);
         bool ConfigureDatabase(void);
         static int ReceiveMsg(string*);
         static int ReceiveServerMsg(char*);

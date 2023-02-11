@@ -44,13 +44,10 @@ int CSPOT::ReceiveMsg(string* Values)
 
     istringstream ss(msgcontent);
 
-    //std::cout << msgcontent << "\n";
-
     while (ss >> word)
     {
         Values[i]=word;
         i++;
-        //std::cout << word << "\n";
     }
     mq_close(msgqread_id);
     return 0;
@@ -77,7 +74,6 @@ int CSPOT::ReceiveServerMsg(char* msg)
         exit(1);    
     }
     strcpy(msg, msgcontent);
-    //printf("In Receive: %s \n", msgcontent);
     mq_close(msgqread_id);
     return 0;
 }
@@ -168,18 +164,9 @@ bool CSPOT::CreateThreads(void)
     return true;
 }
 
-bool CSPOT::ConfigureServer(void)
-{
-       /*Server Creation*/
-
-    return false;
-        
-}
-
 bool CSPOT::ConfigureDatabase(void)
 {
     /*Create Database and the Tables*/
-    //Database.createDB(DATABASE);
     Database.createTable(DATABASE);
 
     Database.insertDataSensorID("temperature","0","30.0","20.0");
@@ -211,7 +198,6 @@ void* CSPOT::Notification(void* threadid)
     while(1)
     {
         sem_wait(&SNotification);
-        //printf("Notification \n");
 
         pthread_mutex_lock(&sensor_resources);
         
@@ -265,10 +251,8 @@ void* CSPOT::ReadApp(void* threadid)
     string database_response;
     while(1)
     {
-        //printf("Read App\n");
 
         ReceiveServerMsg(msg);
-        //printf("Message: %s \n", msg);
         pthread_mutex_lock(&sensor_resources);
         database_response = Database.ProcessRequest(msg);
         pthread_mutex_unlock(&sensor_resources);
@@ -290,11 +274,6 @@ void* CSPOT::UpdateSystem(void* threadid)
         /*=============================================================*/
                 /* Set Sensor Numbers */
         /*_______________________________________________*/
-        //TemperatureSensor.Set_Value(stof(Values[2]));
-        //HumiditySensor.Set_Value(stof(Values[3]));
-        //SmokeSensor.Set_Value(stof(Values[1]));
-
-        //cout << Values[0] << " " << Values[1] << " " << Values[2] << " " << Values[3] << "\n";
         pthread_mutex_lock(&sensor_resources);
         Database.updateUserSensor(Values[3],"temperature");
         Database.updateUserSensor(Values[2],"humidity");
@@ -306,13 +285,10 @@ void* CSPOT::UpdateSystem(void* threadid)
         if(Database.CheckAllSensorLimits("temperature") || Database.CheckAllSensorLimits("humidity")
             || (Database.GetSensorValues("smoke") == "0"))
         {
-            //printf("Notification sent\n");
             sem_post(&SNotification);
         }
         pthread_mutex_unlock(&sensor_resources);    
 
-        //if(TemperatureSensor.Sensor_Limits() || HumiditySensor.Sensor_Limits() || !SmokeSensor.Check_Sensor())
-        //    sem_post(&SNotification);
     }
 }
  
