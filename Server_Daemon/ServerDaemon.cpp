@@ -129,7 +129,6 @@ int main()
                 close(client_sockets[i]);
                 client_sockets.erase(client_sockets.begin() + i);
             }
-            total_bytes_sent =+ bytes_sent;
         }
 
         // If there is content in msg queue to send
