@@ -83,7 +83,6 @@ int CheckSendqueue(void)
     mq_attr msgq_attr;
     mqd_t msgqread_id = mq_open(MSGQRECEIVE_NAME, O_RDWR); // open the message queue;
     mq_getattr(msgqread_id, &msgq_attr);
-    //printf("Check: %i \n", msgq_attr.mq_curmsgs);
     if(msgq_attr.mq_curmsgs == 0)
     { 
         mq_close(msgqread_id);
@@ -108,7 +107,6 @@ int CheckNumMsg(void)
         return -1;
     }
     mq_close(msgqread_id);
-    //printf("There are %ld messages in the queue\n", attr.mq_curmsgs);
 
     return attr.mq_curmsgs;
 }
@@ -128,7 +126,6 @@ int CheckNumMsg2(void)
         return -1;
     }
     mq_close(msgqread_id);
-    //printf("There are %ld messages in the queue\n", attr.mq_curmsgs);
 
     return attr.mq_curmsgs;
 }

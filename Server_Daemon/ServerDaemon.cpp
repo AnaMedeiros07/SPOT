@@ -33,11 +33,13 @@ int main()
     char send_msg[MAX_MSG_LEN] = {0};
     char receive_msg[MAX_MSG_LEN] = {0};
 
+    memset(buffer,0,BUFFER_SIZE);
+
     openlog("SPOT Daemon Test", LOG_PID, LOG_DAEMON);
-    pid = fork(); // create a new process
+    pid = fork();
 
     if (pid < 0)
-    { // on error exit
+    {
         syslog(LOG_ERR, "%s\n", "fork");
         exit(EXIT_FAILURE);
     }
@@ -45,103 +47,87 @@ int main()
     if (pid > 0)
     {
         printf("Server Daemon PID: %d\n", pid);
-        exit(EXIT_SUCCESS); // parent process (exit)
+        exit(EXIT_SUCCESS);
     }
-    sid = setsid(); // create a new session
+    sid = setsid();
 
     if (sid < 0)
-    { // on error exit
+    { 
         syslog(LOG_ERR, "%s\n", "setsid");
         exit(EXIT_FAILURE);
     }
 
-    // make '/' the root directory
     if (chdir("/") < 0)
-    { // on error exit
+    { 
         syslog(LOG_ERR, "%s\n", "chdir");
         exit(EXIT_FAILURE);
     }
 
     create_message_queue();
 
-    // Create a server socket
+    // Create a server socket, make it non-blocking
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0) {
         std::cerr << "Error: could not create socket" << std::endl;
         return 1;
     }
 
-    // Make the server socket non-blocking
     if (fcntl(server_socket, F_SETFL, O_NONBLOCK) < 0) {
         std::cerr << "Error: could not set server socket as non-blocking" << std::endl;
         return 1;
     }
 
-    // Set up the server address
+    // Set up the server address and bind it
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = htonl(INADDR_ANY);
     server_address.sin_port = htons(PORT);
 
-    // Bind the server socket to the address
     if (bind(server_socket, (sockaddr*) &server_address, sizeof(server_address)) < 0) {
         std::cerr << "Error: could not bind socket" << std::endl;
         return 1;
     }
 
-    // Listen for incoming connections
     if (listen(server_socket, 5) < 0) {
         std::cerr << "Error: could not listen on socket" << std::endl;
         return 1;
     }
 
-    std::cout << "Listening for incoming connections on port 8080..." << std::endl;
-
-    memset(buffer,0,BUFFER_SIZE);
-
-    // Keep the server running and keep accepting incoming connections
     while (true) {
         client_socket = accept(server_socket, (sockaddr*) &client_address, &client_len);
 
         // If a new connection is available, accept it
         if (client_socket >= 0) {
-            // Make the client socket non-blocking
             if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0) {
                 std::cerr << "Error: could not set client socket as non-blocking" << std::endl;
                 return 1;
             }
-
-            // Add the client socket to the list of client sockets
 
             client_sockets.push_back(client_socket);
             std::cout << "Accepted incoming connection from " << inet_ntoa(client_address.sin_addr) << std::endl;
             std::cout << "Num of clients: " << client_sockets.size() << std::endl;
         }
 
-        // Check all client sockets for incoming data
+        // Check client sockets for incoming data
         for (int i = 0; i < client_sockets.size(); i++) {
             int bytes_received = recv(client_sockets[i], buffer, BUFFER_SIZE, MSG_NOSIGNAL);
             
             // If there is information received send through messsage queue to main process
             if(bytes_received)
             {
-                //std::cout << "Message Received " << client_sockets[i] << std::endl;
-                //std::cout << bytes_received << buffer << std::endl;
                 send_messagequeue(buffer);
                 memset(buffer,0,BUFFER_SIZE);
-                //std::cout << "On receive: " << CheckNumMsg2() << std::endl;
             }
         }
 
+        // Check client sockets to see if there where disconnects
         memset(buffer,0,BUFFER_SIZE);
         for (int i = 0; i < client_sockets.size(); i++) {
-            //sprintf(buffer,"Buffer: %i\n", j);
             bytes_sent = send(client_sockets[i], buffer, BUFFER_SIZE, MSG_NOSIGNAL);     
             if(bytes_sent == -1)
             {
+                //Client Disconnected
                 close(client_sockets[i]);
                 client_sockets.erase(client_sockets.begin() + i);
-                std::cout << "Client disconnected" << std::endl;
-                //std::cout << "On send " << CheckNumMsg() << std::endl;
             }
             total_bytes_sent =+ bytes_sent;
         }
@@ -154,14 +140,11 @@ int main()
 
             // Check all client sockets and send data
             for (int i = 0; i < client_sockets.size(); i++) {
-                //sprintf(buffer,"Buffer: %i\n", j);
                 bytes_sent = send(client_sockets[i], buffer, BUFFER_SIZE, MSG_NOSIGNAL);     
                 if(bytes_sent == -1)
                 {
                     close(client_sockets[i]);
                     client_sockets.erase(client_sockets.begin() + i);
-                    std::cout << "Client disconnected" << std::endl;
-                    //std::cout << "On send " << CheckNumMsg() << std::endl;
                 }
                 total_bytes_sent =+ bytes_sent;
             }
@@ -171,10 +154,11 @@ int main()
                 memset(buffer,0,BUFFER_SIZE);
             }
         }
-        //std::cout << "On Final " << CheckNumMsg() << std::endl;
+
+        //Sleep is necessary to limit how fast it updates, otherwise errors will occur
         usleep(50000);
 
     }
-    std::cout << "Server is down!" << std::endl;
+
     return 0;
 }
