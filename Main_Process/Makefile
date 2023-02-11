@@ -6,7 +6,7 @@ LDLIBS = -lsqlite3 -lpthread
 
 export PATH = /home/francisco/buildroot/buildroot-2022.08/output/host/bin/
 
-objects = CCamera.o CSensor.o main.o CHb100.o CSPOT.o CDatabase.o
+objects = main.o CHb100.o CSPOT.o CDatabase.o
 
 SPOT.elf: $(objects)
 	$(CXX) $(objects) -L $(LIBS) $(LDLIBS) -o $@
