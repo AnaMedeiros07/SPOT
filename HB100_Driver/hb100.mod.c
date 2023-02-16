@@ -47,14 +47,14 @@ __used __section("__versions") = {
 	{ 0x4b0a3f52, "gic_nonsecure_priorities" },
 	{ 0xd697e69a, "trace_hardirqs_on" },
 	{ 0xec3d2e1b, "trace_hardirqs_off" },
+	{ 0xaa9405fc, "send_sig_info" },
 	{ 0x9f49dcc4, "__stack_chk_fail" },
 	{ 0xc38c83b8, "mod_timer" },
 	{ 0x15ba50a6, "jiffies" },
-	{ 0xaa9405fc, "send_sig_info" },
 	{ 0xc5850110, "printk" },
 };
 
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "40A928E191E03004E654703");
+MODULE_INFO(srcversion, "260A4E6FBABBE811FDC6D71");
