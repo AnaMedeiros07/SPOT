@@ -13,3 +13,6 @@ Device that can read some ambient variavels like temperature, humidity and smoke
 ## Software :
 -> C++                                                                                                                                                                   
 -> Sql lite for the database
+
+Authors:
+- Ana Martins e Francisco Salgado
